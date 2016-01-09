@@ -184,6 +184,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <text x="-0.908" y="1.27" size="0.4064" layer="25">&gt;NAME</text>
 <text x="-0.908" y="-1.651" size="0.4064" layer="27">&gt;VALUE</text>
 </package>
+<package name="PAD.03X.04">
+<smd name="P$1" x="0" y="0" dx="1.016" dy="1.016" layer="1" roundness="100" cream="no"/>
+</package>
 </packages>
 </library>
 <library name="wicked-device">
@@ -578,6 +581,9 @@ design rules under a new name.</description>
 <element name="C4" library="SparkFun-Passives" package="0805" value="10uF" x="-60.96" y="-41.91"/>
 <element name="C5" library="SparkFun-Passives" package="0805" value="10uF" x="-64.77" y="-41.91"/>
 <element name="R7" library="SparkFun-Passives" package="0805" value="10k_DNP" x="-68.58" y="-41.91"/>
+<element name="TP1" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="-68.58" y="-45.72"/>
+<element name="TP2" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="-68.58" y="-48.26"/>
+<element name="TP3" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="-68.58" y="-50.8"/>
 </elements>
 <signals>
 <signal name="3.3V">
@@ -636,6 +642,8 @@ design rules under a new name.</description>
 <contactref element="U1" pad="2"/>
 <contactref element="R6" pad="2"/>
 <contactref element="D1" pad="A"/>
+<contactref element="TP3" pad="P$1"/>
+<wire x1="-53.07" y1="-30.48" x2="-68.58" y2="-50.8" width="0" layer="19" extent="1-1"/>
 <wire x1="-52.44" y1="-25.4" x2="-53.07" y2="-30.48" width="0" layer="19" extent="1-1"/>
 <wire x1="-13.9525" y1="4.21" x2="-52.44" y2="-25.4" width="0" layer="19" extent="1-1"/>
 </signal>
@@ -690,14 +698,18 @@ design rules under a new name.</description>
 <wire x1="-39" y1="-13.97" x2="-44.45" y2="-20.32" width="0" layer="19" extent="1-1"/>
 <wire x1="-39" y1="-10.16" x2="-39" y2="-13.97" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$1">
+<signal name="SJ_MASTER_SDA_3V3">
 <contactref element="R1" pad="2"/>
 <contactref element="SJ4" pad="2"/>
+<contactref element="TP1" pad="P$1"/>
+<wire x1="-41.402" y1="-12.7" x2="-68.58" y2="-45.72" width="0" layer="19" extent="1-1"/>
 <wire x1="-37.2" y1="-10.16" x2="-41.402" y2="-12.7" width="0" layer="19" extent="1-1"/>
 </signal>
-<signal name="N$2">
+<signal name="SJ_MASTER_SCL_3V3">
 <contactref element="R2" pad="2"/>
 <contactref element="SJ5" pad="2"/>
+<contactref element="TP2" pad="P$1"/>
+<wire x1="-45.212" y1="-12.7" x2="-68.58" y2="-48.26" width="0" layer="19" extent="1-1"/>
 <wire x1="-37.2" y1="-13.97" x2="-45.212" y2="-12.7" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="MASTER_SDA_3V3">

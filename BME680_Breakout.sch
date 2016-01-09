@@ -825,6 +825,22 @@ It has a reduced top mask to make it harder to install upside-down.</description
 </polygon>
 <circle x="0" y="0" radius="1.74625" width="0.2032" layer="21"/>
 </package>
+<package name="PAD.02X.02">
+<smd name="P$1" x="0" y="0" dx="0.508" dy="0.508" layer="1"/>
+</package>
+<package name="PAD.03X.03">
+<smd name="P$1" x="0" y="0" dx="0.762" dy="0.762" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="PAD.03X.05">
+<smd name="P$1" x="0" y="0" dx="1.27" dy="1.27" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="PAD.03X.04">
+<smd name="P$1" x="0" y="0" dx="1.016" dy="1.016" layer="1" roundness="100" cream="no"/>
+</package>
+<package name="TP_15TH">
+<pad name="P$1" x="0" y="0" drill="0.381" diameter="0.6096" stop="no"/>
+<circle x="0" y="0" radius="0.381" width="0" layer="30"/>
+</package>
 </packages>
 <symbols>
 <symbol name="CAP">
@@ -873,6 +889,13 @@ It has a reduced top mask to make it harder to install upside-down.</description
 <text x="-2.54" y="-5.08" size="1.778" layer="96">&gt;VALUE</text>
 <pin name="2" x="5.08" y="0" visible="off" length="short" direction="pas" swaplevel="1" rot="R180"/>
 <pin name="1" x="-5.08" y="0" visible="off" length="short" direction="pas" swaplevel="1"/>
+</symbol>
+<symbol name="TEST-POINT">
+<wire x1="2.54" y1="0" x2="0" y2="0" width="0.1524" layer="94"/>
+<wire x1="3.302" y1="0.762" x2="3.302" y2="-0.762" width="0.1524" layer="94" curve="180"/>
+<text x="-2.54" y="2.54" size="1.778" layer="95">&gt;Name</text>
+<text x="-2.54" y="-2.54" size="1.778" layer="96">&gt;Value</text>
+<pin name="1" x="0" y="0" visible="off" length="point" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -1189,6 +1212,54 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="TEST-POINT" prefix="TP">
+<description>Bare copper test points for troubleshooting or ICT</description>
+<gates>
+<gate name="G$1" symbol="TEST-POINT" x="0" y="0"/>
+</gates>
+<devices>
+<device name="2" package="PAD.02X.02">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="3" package="PAD.03X.03">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="3X5" package="PAD.03X.05">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="3X4" package="PAD.03X.04">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+<device name="TP_15TH_THRU" package="TP_15TH">
+<connects>
+<connect gate="G$1" pin="1" pad="P$1"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -1873,6 +1944,9 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="C5" library="SparkFun-Passives" deviceset="CAP" device="0805" value="10uF"/>
 <part name="R7" library="SparkFun-Passives" deviceset="RESISTOR" device="0805-RES" value="10k_DNP"/>
 <part name="SUPPLY16" library="supply2" deviceset="GND" device=""/>
+<part name="TP1" library="SparkFun-Passives" deviceset="TEST-POINT" device="3X4"/>
+<part name="TP2" library="SparkFun-Passives" deviceset="TEST-POINT" device="3X4"/>
+<part name="TP3" library="SparkFun-Passives" deviceset="TEST-POINT" device="3X4"/>
 </parts>
 <sheets>
 <sheet>
@@ -1949,12 +2023,16 @@ In this library the device names are the same as the pin names of the symbols, t
 <wire x1="218.44" y1="114.3" x2="393.7" y2="114.3" width="0.3048" layer="94" style="longdash"/>
 <wire x1="218.44" y1="187.96" x2="391.16" y2="187.96" width="0.3048" layer="94" style="longdash"/>
 <wire x1="43.18" y1="187.96" x2="218.44" y2="187.96" width="0.3048" layer="94" style="longdash"/>
-<text x="132.08" y="132.08" size="1.778" layer="94">note: cut jumper for external pull-up</text>
-<text x="175.26" y="132.08" size="1.778" layer="94">note: cut jumper for external pull-up</text>
+<text x="132.08" y="134.62" size="1.778" layer="94">note: cut jumper for external pull-up</text>
+<text x="175.26" y="134.62" size="1.778" layer="94">note: cut jumper for external pull-up</text>
 <text x="53.34" y="43.18" size="1.778" layer="94">note: hardware option to *require* 
          enable signal to actively be 
          asserted in order to enable sensor
          (R7 not populated by default)</text>
+<text x="271.78" y="109.22" size="1.778" layer="94">test points</text>
+<wire x1="228.6" y1="104.14" x2="279.4" y2="104.14" width="0.3048" layer="94"/>
+<wire x1="279.4" y1="104.14" x2="335.28" y2="104.14" width="0.3048" layer="94"/>
+<wire x1="279.4" y1="104.14" x2="279.4" y2="106.68" width="0.3048" layer="94"/>
 </plain>
 <instances>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
@@ -2013,6 +2091,15 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="C5" gate="G$1" x="297.18" y="215.9"/>
 <instance part="R7" gate="G$1" x="101.6" y="55.88" rot="R270"/>
 <instance part="SUPPLY16" gate="GND" x="101.6" y="45.72"/>
+<instance part="TP1" gate="G$1" x="312.42" y="88.9" smashed="yes">
+<attribute name="NAME" x="309.88" y="91.44" size="1.778" layer="95"/>
+</instance>
+<instance part="TP2" gate="G$1" x="312.42" y="81.28" smashed="yes">
+<attribute name="NAME" x="309.88" y="83.82" size="1.778" layer="95"/>
+</instance>
+<instance part="TP3" gate="G$1" x="312.42" y="73.66" smashed="yes">
+<attribute name="NAME" x="309.88" y="76.2" size="1.778" layer="95"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -2158,6 +2245,11 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="D1" gate="G$1" pin="A"/>
 <wire x1="96.52" y1="154.94" x2="96.52" y2="149.86" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="TP3" gate="G$1" pin="1"/>
+<wire x1="312.42" y1="73.66" x2="307.34" y2="73.66" width="0.1524" layer="91"/>
+<label x="307.34" y="73.66" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="ADDR_SELECT_3V3" class="0">
 <segment>
@@ -2285,20 +2377,38 @@ In this library the device names are the same as the pin names of the symbols, t
 <junction x="264.16" y="223.52"/>
 </segment>
 </net>
-<net name="N$1" class="0">
+<net name="SJ_MASTER_SDA_3V3" class="0">
 <segment>
 <pinref part="R1" gate="G$1" pin="2"/>
 <pinref part="SJ4" gate="G$1" pin="2"/>
-<wire x1="129.54" y1="134.62" x2="129.54" y2="127" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="134.62" x2="129.54" y2="132.08" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="132.08" x2="129.54" y2="127" width="0.1524" layer="91"/>
 <wire x1="129.54" y1="127" x2="132.08" y2="127" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="132.08" x2="132.08" y2="132.08" width="0.1524" layer="91"/>
+<junction x="129.54" y="132.08"/>
+<label x="132.08" y="132.08" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="TP1" gate="G$1" pin="1"/>
+<wire x1="312.42" y1="88.9" x2="307.34" y2="88.9" width="0.1524" layer="91"/>
+<label x="307.34" y="88.9" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="N$2" class="0">
+<net name="SJ_MASTER_SCL_3V3" class="0">
 <segment>
 <pinref part="R2" gate="G$1" pin="2"/>
 <pinref part="SJ5" gate="G$1" pin="2"/>
-<wire x1="172.72" y1="134.62" x2="172.72" y2="127" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="134.62" x2="172.72" y2="132.08" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="132.08" x2="172.72" y2="127" width="0.1524" layer="91"/>
 <wire x1="172.72" y1="127" x2="175.26" y2="127" width="0.1524" layer="91"/>
+<wire x1="172.72" y1="132.08" x2="175.26" y2="132.08" width="0.1524" layer="91"/>
+<junction x="172.72" y="132.08"/>
+<label x="175.26" y="132.08" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="TP2" gate="G$1" pin="1"/>
+<wire x1="312.42" y1="81.28" x2="307.34" y2="81.28" width="0.1524" layer="91"/>
+<label x="307.34" y="81.28" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="MASTER_SDA_3V3" class="0">
