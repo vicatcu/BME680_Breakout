@@ -1871,6 +1871,8 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="SUPPLY15" library="supply2" deviceset="GND" device=""/>
 <part name="C4" library="SparkFun-Passives" deviceset="CAP" device="0805" value="10uF"/>
 <part name="C5" library="SparkFun-Passives" deviceset="CAP" device="0805" value="10uF"/>
+<part name="R7" library="SparkFun-Passives" deviceset="RESISTOR" device="0805-RES" value="10k_DNP"/>
+<part name="SUPPLY16" library="supply2" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -1914,10 +1916,13 @@ In this library the device names are the same as the pin names of the symbols, t
     (1) pulled-up for I2C
     (2) chip-select for SPI
     (3) protected from 5V input</text>
-<text x="116.84" y="53.34" size="1.778" layer="94">notes:
+<text x="116.84" y="43.18" size="1.778" layer="94">notes:
    1) all inputs are 5V tolerant
    2) enable is active high, with internal 100 kOhm pullup
-   3) low-high transition time is ~147ns</text>
+   3) low-high transition time is ~147ns
+   4) using GPIOs as 1-hot enable signals allows
+       SPI-like chip select with I2C interface, and
+       allows arbitrarily many sensors on one master I2C bus</text>
 <text x="292.1" y="147.32" size="1.778" layer="94">note: output!</text>
 <text x="264.16" y="121.92" size="1.778" layer="94">notes:
     (1) for SPI:
@@ -1946,6 +1951,10 @@ In this library the device names are the same as the pin names of the symbols, t
 <wire x1="43.18" y1="187.96" x2="218.44" y2="187.96" width="0.3048" layer="94" style="longdash"/>
 <text x="132.08" y="132.08" size="1.778" layer="94">note: cut jumper for external pull-up</text>
 <text x="175.26" y="132.08" size="1.778" layer="94">note: cut jumper for external pull-up</text>
+<text x="53.34" y="43.18" size="1.778" layer="94">note: hardware option to *require* 
+         enable signal to actively be 
+         asserted in order to enable sensor
+         (R7 not populated by default)</text>
 </plain>
 <instances>
 <instance part="FRAME1" gate="G$1" x="0" y="0"/>
@@ -2002,6 +2011,8 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="SUPPLY15" gate="GND" x="281.94" y="203.2"/>
 <instance part="C4" gate="G$1" x="264.16" y="215.9"/>
 <instance part="C5" gate="G$1" x="297.18" y="215.9"/>
+<instance part="R7" gate="G$1" x="101.6" y="55.88" rot="R270"/>
+<instance part="SUPPLY16" gate="GND" x="101.6" y="45.72"/>
 </instances>
 <busses>
 </busses>
@@ -2125,6 +2136,11 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="C5" gate="G$1" pin="2"/>
 <wire x1="297.18" y1="213.36" x2="297.18" y2="208.28" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="R7" gate="G$1" pin="2"/>
+<pinref part="SUPPLY16" gate="GND" pin="GND"/>
+<wire x1="101.6" y1="48.26" x2="101.6" y2="50.8" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="CSB_3V3" class="0">
 <segment>
@@ -2217,6 +2233,12 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="JP1" gate="A" pin="5"/>
 <wire x1="312.42" y1="157.48" x2="304.8" y2="157.48" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="R7" gate="G$1" pin="1"/>
+<wire x1="101.6" y1="60.96" x2="101.6" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="63.5" x2="99.06" y2="63.5" width="0.1524" layer="91"/>
+<label x="99.06" y="63.5" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
 </net>
 <net name="SLAVE_SDA_3V3" class="0">
 <segment>
@@ -2293,7 +2315,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <label x="187.96" y="127" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="CSB_VCCIO" class="0">
+<net name="CSB_VIO" class="0">
 <segment>
 <pinref part="D1" gate="G$1" pin="C"/>
 <wire x1="96.52" y1="144.78" x2="96.52" y2="142.24" width="0.1524" layer="91"/>

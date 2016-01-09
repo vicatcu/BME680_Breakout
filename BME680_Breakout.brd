@@ -577,6 +577,7 @@ design rules under a new name.</description>
 <element name="U8" library="wicked-device" package="DPAK" value="LD1117XX" x="-53.34" y="-39.37"/>
 <element name="C4" library="SparkFun-Passives" package="0805" value="10uF" x="-60.96" y="-41.91"/>
 <element name="C5" library="SparkFun-Passives" package="0805" value="10uF" x="-64.77" y="-41.91"/>
+<element name="R7" library="SparkFun-Passives" package="0805" value="10k_DNP" x="-68.58" y="-41.91"/>
 </elements>
 <signals>
 <signal name="3.3V">
@@ -618,6 +619,8 @@ design rules under a new name.</description>
 <contactref element="U8" pad="1"/>
 <contactref element="C4" pad="2"/>
 <contactref element="C5" pad="2"/>
+<contactref element="R7" pad="2"/>
+<wire x1="-63.87" y1="-41.91" x2="-67.68" y2="-41.91" width="0" layer="19" extent="1-1"/>
 <wire x1="-60.06" y1="-41.91" x2="-63.87" y2="-41.91" width="0" layer="19" extent="1-1"/>
 <wire x1="-55.62" y1="-42.28" x2="-60.06" y2="-41.91" width="0" layer="19" extent="1-1"/>
 <wire x1="-49.98" y1="-25.4" x2="-55.62" y2="-42.28" width="0" layer="19" extent="1-1"/>
@@ -665,6 +668,8 @@ design rules under a new name.</description>
 <signal name="SLAVE_I2C_ENABLE">
 <contactref element="U4" pad="5"/>
 <contactref element="JP1" pad="5"/>
+<contactref element="R7" pad="1"/>
+<wire x1="-34.29" y1="-20.32" x2="-69.48" y2="-41.91" width="0" layer="19" extent="1-1"/>
 <wire x1="-31.97" y1="-2.905" x2="-34.29" y2="-20.32" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SLAVE_SDA_3V3">
@@ -701,7 +706,7 @@ design rules under a new name.</description>
 <signal name="MASTER_SCL_3V3">
 <contactref element="SJ5" pad="1"/>
 </signal>
-<signal name="CSB_VCCIO">
+<signal name="CSB_VIO">
 <contactref element="D1" pad="C"/>
 <contactref element="JP1" pad="6"/>
 <wire x1="-31.75" y1="-20.32" x2="-51.07" y2="-30.48" width="0" layer="19" extent="1-1"/>
