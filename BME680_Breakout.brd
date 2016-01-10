@@ -370,6 +370,25 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <text x="-1.8" y="0.9" size="0.8128" layer="25" font="vector">&gt;NAME</text>
 <text x="-2.1" y="-1.7" size="0.8128" layer="27" font="vector">&gt;VALUE</text>
 </package>
+<package name="1812">
+<description>Multilayer SMD</description>
+<wire x1="-2.3" y1="0" x2="2.4" y2="0" width="0.127" layer="51"/>
+<wire x1="-2.8004" y1="1.7113" x2="2.8004" y2="1.7113" width="0.127" layer="21"/>
+<wire x1="2.8004" y1="1.7113" x2="2.8004" y2="-1.7113" width="0.127" layer="51"/>
+<wire x1="2.8004" y1="-1.7113" x2="-2.8004" y2="-1.7113" width="0.127" layer="21"/>
+<wire x1="-2.8004" y1="-1.7113" x2="-2.8004" y2="1.7113" width="0.127" layer="51"/>
+<wire x1="-1.7" y1="0" x2="1.7" y2="0" width="0.127" layer="51"/>
+<wire x1="-1.6" y1="0.8" x2="1.6" y2="0.8" width="0.07" layer="21"/>
+<wire x1="1.6" y1="0.8" x2="1.6" y2="-0.8" width="0.07" layer="51"/>
+<wire x1="1.6" y1="-0.8" x2="-1.6" y2="-0.8" width="0.07" layer="21"/>
+<wire x1="-1.6" y1="-0.8" x2="-1.6" y2="0.8" width="0.07" layer="51"/>
+<smd name="1" x="-2.046" y="0" dx="2.286" dy="2.794" layer="1"/>
+<smd name="2" x="2.046" y="0" dx="2.286" dy="2.794" layer="1"/>
+<text x="-1.8575" y="1.905" size="0.6096" layer="27">&gt;VALUE</text>
+<text x="-1.8575" y="-2.54" size="0.6096" layer="25">&gt;NAME</text>
+<rectangle x1="-0.9" y1="-0.3" x2="0.9" y2="0.3" layer="21"/>
+<rectangle x1="-0.6" y1="-0.3" x2="0.5" y2="0.3" layer="21"/>
+</package>
 </packages>
 </library>
 </libraries>
@@ -575,7 +594,7 @@ design rules under a new name.</description>
 <element name="JP1" library="pinhead" package="1X08" value="" x="-35.56" y="-20.32"/>
 <element name="SJ2" library="SparkFun-Passives" package="PAD-JUMPER-2-NO_YES_SILK" value="JUMPER-PAD-2-NOYES_SILK" x="-49.53" y="-25.4"/>
 <element name="R6" library="SparkFun-Passives" package="0805" value="10k" x="-53.34" y="-25.4"/>
-<element name="D1" library="adafruit" package="SOD-323F" value="" x="-52.07" y="-30.48"/>
+<element name="D1" library="adafruit" package="SOD-323F" value="1N4148" x="-52.07" y="-30.48"/>
 <element name="R3" library="SparkFun-Passives" package="0805" value="10k" x="-57.15" y="-29.21"/>
 <element name="U8" library="wicked-device" package="DPAK" value="LD1117XX" x="-53.34" y="-39.37"/>
 <element name="C4" library="SparkFun-Passives" package="0805" value="10uF" x="-60.96" y="-41.91"/>
@@ -584,6 +603,9 @@ design rules under a new name.</description>
 <element name="TP1" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="-68.58" y="-45.72"/>
 <element name="TP2" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="-68.58" y="-48.26"/>
 <element name="TP3" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="-68.58" y="-50.8"/>
+<element name="D2" library="adafruit" package="SOD-323F" value="DDZ3V3BSF-7" x="-67.31" y="-54.61"/>
+<element name="F1" library="adafruit" package="1812" value="" x="-67.31" y="-59.69"/>
+<element name="TP4" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="-69.85" y="-63.5"/>
 </elements>
 <signals>
 <signal name="3.3V">
@@ -626,6 +648,8 @@ design rules under a new name.</description>
 <contactref element="C4" pad="2"/>
 <contactref element="C5" pad="2"/>
 <contactref element="R7" pad="2"/>
+<contactref element="D2" pad="A"/>
+<wire x1="-67.68" y1="-41.91" x2="-68.31" y2="-54.61" width="0" layer="19" extent="1-1"/>
 <wire x1="-63.87" y1="-41.91" x2="-67.68" y2="-41.91" width="0" layer="19" extent="1-1"/>
 <wire x1="-60.06" y1="-41.91" x2="-63.87" y2="-41.91" width="0" layer="19" extent="1-1"/>
 <wire x1="-55.62" y1="-42.28" x2="-60.06" y2="-41.91" width="0" layer="19" extent="1-1"/>
@@ -651,10 +675,14 @@ design rules under a new name.</description>
 <contactref element="U1" pad="5"/>
 <contactref element="SJ2" pad="2"/>
 <contactref element="R3" pad="2"/>
-<contactref element="JP1" pad="7"/>
+<contactref element="F1" pad="1"/>
+<contactref element="D2" pad="C"/>
+<contactref element="TP4" pad="P$1"/>
+<wire x1="-69.356" y1="-59.69" x2="-69.85" y2="-63.5" width="0" layer="19" extent="1-1"/>
+<wire x1="-66.31" y1="-54.61" x2="-69.356" y2="-59.69" width="0" layer="19" extent="1-1"/>
+<wire x1="-56.25" y1="-29.21" x2="-66.31" y2="-54.61" width="0" layer="19" extent="1-1"/>
 <wire x1="-49.08" y1="-25.4" x2="-56.25" y2="-29.21" width="0" layer="19" extent="1-1"/>
-<wire x1="-29.21" y1="-20.32" x2="-49.08" y2="-25.4" width="0" layer="19" extent="1-1"/>
-<wire x1="-16.5275" y1="2.61" x2="-29.21" y2="-20.32" width="0" layer="19" extent="1-1"/>
+<wire x1="-16.5275" y1="2.61" x2="-49.08" y2="-25.4" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SLAVE_SCL_3V3">
 <contactref element="U1" pad="4"/>
@@ -722,6 +750,11 @@ design rules under a new name.</description>
 <contactref element="D1" pad="C"/>
 <contactref element="JP1" pad="6"/>
 <wire x1="-31.75" y1="-20.32" x2="-51.07" y2="-30.48" width="0" layer="19" extent="1-1"/>
+</signal>
+<signal name="ADDR_SELECT_VCCIO">
+<contactref element="JP1" pad="7"/>
+<contactref element="F1" pad="2"/>
+<wire x1="-29.21" y1="-20.32" x2="-65.264" y2="-59.69" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>
