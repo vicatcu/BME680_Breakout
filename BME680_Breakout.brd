@@ -23,14 +23,14 @@
 <layer number="13" name="Route13" color="4" fill="5" visible="no" active="yes"/>
 <layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
 <layer number="15" name="Route15" color="4" fill="6" visible="no" active="no"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
-<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="no" active="yes"/>
 <layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
-<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
@@ -38,7 +38,7 @@
 <layer number="28" name="bValues" color="7" fill="1" visible="no" active="yes"/>
 <layer number="29" name="tStop" color="7" fill="3" visible="no" active="yes"/>
 <layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
-<layer number="31" name="tCream" color="7" fill="4" visible="yes" active="yes"/>
+<layer number="31" name="tCream" color="7" fill="4" visible="no" active="yes"/>
 <layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
 <layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
 <layer number="34" name="bFinish" color="6" fill="6" visible="no" active="yes"/>
@@ -213,6 +213,20 @@
 <text x="6.858" y="20.32" size="1.016" layer="21" font="vector" ratio="12">BME680 
 Breakout
 v1.0</text>
+<text x="16.256" y="8.255" size="1.016" layer="21" font="vector" ratio="10">SJ1</text>
+<text x="26.035" y="10.16" size="1.016" layer="21" font="vector" ratio="10" rot="R180">SJ2</text>
+<wire x1="23.241" y1="8.89" x2="22.225" y2="7.874" width="0.254" layer="21"/>
+<wire x1="22.225" y1="7.874" x2="22.606" y2="7.874" width="0.254" layer="21"/>
+<wire x1="22.225" y1="7.874" x2="22.225" y2="8.255" width="0.254" layer="21"/>
+<text x="4.064" y="5.842" size="1.016" layer="21" font="vector" ratio="10">SJ3</text>
+<text x="15.113" y="20.193" size="1.016" layer="21" font="vector" ratio="10">SJ4</text>
+<text x="22.987" y="14.986" size="1.016" layer="21" font="vector" ratio="10">SJ5</text>
+<text x="27.432" y="14.859" size="1.016" layer="21" font="vector" ratio="10">SJ6</text>
+<text x="33.401" y="6.223" size="1.016" layer="21" font="vector" ratio="10">SJ7</text>
+<text x="22.606" y="11.811" size="0.8128" layer="21" font="vector" ratio="10">scl</text>
+<text x="24.003" y="7.874" size="0.8128" layer="21" font="vector" ratio="10">sda</text>
+<text x="6.35" y="3.302" size="0.8128" layer="21" font="vector" ratio="10">adr</text>
+<text x="10.668" y="10.795" size="0.8128" layer="21" font="vector" ratio="10">csb</text>
 </plain>
 <libraries>
 <library name="SparkFun-Passives">
@@ -1529,37 +1543,37 @@ Please make sure your boards conform to these design rules.</description>
 </autorouter>
 <elements>
 <element name="C1" library="SparkFun-Passives" package="0805" value="0.1uF" x="19.812" y="22.86" smashed="yes">
-<attribute name="NAME" x="16.51" y="22.4155" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="16.51" y="22.4155" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="18.796" y="21.463" size="0.4064" layer="27"/>
 </element>
 <element name="C2" library="SparkFun-Passives" package="0805" value="0.1uF" x="22.606" y="20.32" smashed="yes" rot="R270">
-<attribute name="NAME" x="23.622" y="20.6375" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="23.622" y="20.6375" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="21.209" y="21.336" size="0.4064" layer="27" rot="R270"/>
 </element>
 <element name="R4" library="SparkFun-Passives" package="0805" value="4.7k" x="26.67" y="17.526" smashed="yes" rot="R180">
-<attribute name="NAME" x="27.686" y="16.5735" size="1.016" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="27.686" y="16.5735" size="1.016" layer="51" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="27.686" y="18.923" size="0.4064" layer="27" rot="R180"/>
 </element>
 <element name="R5" library="SparkFun-Passives" package="0805" value="4.7k" x="14.097" y="18.415" smashed="yes" rot="R90">
-<attribute name="NAME" x="15.24" y="21.0185" size="1.016" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="15.24" y="21.0185" size="1.016" layer="51" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="15.494" y="17.399" size="0.4064" layer="27" rot="R90"/>
 </element>
 <element name="U1" library="wicked-device" package="BME680" value="BME680" x="19.812" y="20.066" smashed="yes" rot="R270">
-<attribute name="NAME" x="16.51" y="20.574" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="16.51" y="20.574" size="1.016" layer="51" font="vector" ratio="10"/>
 </element>
 <element name="U4" library="PCA9515ADP" package="SOT505-1" value="PCA9515ADP" x="19.05" y="14.224" smashed="yes">
-<attribute name="NAME" x="18.0807375" y="10.0606875" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="18.0807375" y="10.0606875" size="1.016" layer="51" font="vector" ratio="10"/>
 </element>
 <element name="C3" library="SparkFun-Passives" package="0805" value="0.1uF" x="16.002" y="15.494" smashed="yes" rot="R270">
-<attribute name="NAME" x="13.462" y="15.8115" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="13.462" y="15.8115" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="14.605" y="16.51" size="0.4064" layer="27" rot="R270"/>
 </element>
 <element name="R1" library="SparkFun-Passives" package="0805" value="4.7k" x="24.13" y="6.604" smashed="yes" rot="R180">
-<attribute name="NAME" x="26.416" y="8.5725" size="1.016" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="26.416" y="8.5725" size="1.016" layer="51" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="25.146" y="8.001" size="0.4064" layer="27" rot="R180"/>
 </element>
 <element name="R2" library="SparkFun-Passives" package="0805" value="4.7k" x="21.336" y="9.144" smashed="yes" rot="R180">
-<attribute name="NAME" x="22.86" y="11.1125" size="1.016" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="22.86" y="11.1125" size="1.016" layer="51" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="22.352" y="10.541" size="0.4064" layer="27" rot="R180"/>
 </element>
 <element name="SJ4" library="SparkFun-Passives" package="PAD-JUMPER-2-NC_BY_TRACE_YES_SILK" value="JUMPER-PAD-2-NC_BY_TRACE" x="20.828" y="6.858" smashed="yes">
@@ -1575,43 +1589,43 @@ Please make sure your boards conform to these design rules.</description>
 <attribute name="VALUE" x="4.426" y="6.604" size="0.4064" layer="27"/>
 </element>
 <element name="R6" library="SparkFun-Passives" package="0805" value="10k" x="15.24" y="11.176" smashed="yes" rot="R270">
-<attribute name="NAME" x="12.7" y="10.7315" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="12.7" y="10.7315" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="13.843" y="12.192" size="0.4064" layer="27" rot="R270"/>
 </element>
 <element name="D1" library="adafruit" package="SOD-323F" value="1N4148" x="15.24" y="7.62" smashed="yes" rot="R270">
-<attribute name="NAME" x="16.2594" y="8.1644" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="16.2594" y="8.1644" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="13.54" y="9.72" size="0.8128" layer="27" font="vector" rot="R270"/>
 </element>
 <element name="R3" library="SparkFun-Passives" package="0805" value="10k" x="12.954" y="14.478" smashed="yes" rot="R180">
-<attribute name="NAME" x="13.843" y="13.6525" size="1.016" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="13.843" y="13.6525" size="1.016" layer="51" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="13.97" y="15.875" size="0.4064" layer="27" rot="R180"/>
 </element>
 <element name="U8" library="wicked-device" package="DPAK" value="LD1117XX" x="33.782" y="12.192" smashed="yes">
-<attribute name="NAME" x="37.37" y="7.293" size="1.016" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="37.37" y="7.293" size="1.016" layer="51" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="37.919" y="10.89" size="0.4064" layer="27" rot="R90"/>
 </element>
 <element name="C4" library="SparkFun-Passives" package="0805" value="10uF" x="31.75" y="6.35" smashed="yes" rot="R180">
-<attribute name="NAME" x="32.512" y="5.5245" size="1.016" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="32.512" y="5.5245" size="1.016" layer="51" font="vector" ratio="10" rot="R180"/>
 <attribute name="VALUE" x="32.766" y="7.747" size="0.4064" layer="27" rot="R180"/>
 </element>
 <element name="C5" library="SparkFun-Passives" package="0805" value="10uF" x="28.702" y="9.652" smashed="yes" rot="R270">
-<attribute name="NAME" x="26.162" y="9.4615" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="26.162" y="9.4615" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="27.305" y="10.668" size="0.4064" layer="27" rot="R270"/>
 </element>
 <element name="R7" library="SparkFun-Passives" package="0805" value="10k_DNP" x="21.844" y="15.494" smashed="yes" rot="R270">
-<attribute name="NAME" x="21.59" y="12.7635" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="21.59" y="12.7635" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="20.447" y="16.51" size="0.4064" layer="27" rot="R270"/>
 </element>
 <element name="TP1" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="23.368" y="8.128" smashed="yes"/>
 <element name="TP2" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="23.368" y="11.176"/>
 <element name="TP3" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="11.684" y="12.192" smashed="yes"/>
 <element name="D2" library="adafruit" package="SOD-323F" value="DDZ3V3BSF-7" x="7.112" y="11.176" smashed="yes">
-<attribute name="NAME" x="6.328" y="12.33" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="6.328" y="12.33" size="1.016" layer="51" font="vector" ratio="10"/>
 <attribute name="VALUE" x="5.012" y="9.476" size="0.8128" layer="27" font="vector"/>
 </element>
 <element name="F1" library="adafruit" package="1812" value="" x="10.16" y="7.62" smashed="yes">
 <attribute name="VALUE" x="8.3025" y="9.525" size="0.6096" layer="27"/>
-<attribute name="NAME" x="9.5725" y="9.906" size="1.016" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="9.5725" y="9.906" size="1.016" layer="51" font="vector" ratio="10"/>
 </element>
 <element name="TP4" library="SparkFun-Passives" package="PAD.03X.04" value="TEST-POINT3X4" x="7.62" y="4.826" smashed="yes"/>
 <element name="STANDOFF1" library="SparkFun-Electromechanical" package="STAND-OFF" value="STAND-OFF" x="35.052" y="22.352"/>
