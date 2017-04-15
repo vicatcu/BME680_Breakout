@@ -5,11 +5,14 @@ BME680_Library bme680;
 void setup(void){
   Serial.begin(9600);
 
-  if(!bme680.begin()){
-    Serial.print("BME680 Initialization Failed!");
+  Serial.print("BME Initialization...");
+  if(bme680.begin()){
+     Serial.print("Succeeded!");
+  }
+  else {
+    Serial.print("Failed!");
     for(;;); // spin forever
   }
-
 }
 
 void loop(void){
