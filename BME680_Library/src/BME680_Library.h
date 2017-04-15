@@ -8,6 +8,8 @@ extern "C" {
   #include "utility/bme680.h"
 }
 
+#include <Arduino.h>
+
 class BME680_Library {
 private:
   struct bme680_t bme680_sensor_no[1];
@@ -20,14 +22,16 @@ private:
   /* BME680 sensor’s heater configuration structure instance */
   struct bme680_heater_conf set_heatr_conf_sensor[1];
 
+  uint8_t i2c_address;
+
   // these have to be static so that the class can bootstrap the driver by passing a function pointer
   static int8_t i2c_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len);
   static int8_t i2c_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len);
   static int8_t i2c_burst_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_uint8_t, uint32_t length_uint32_t);
   static void delay_msec(BME680_MDELAY_DATA_TYPE);
 public:
-  BME680_Library(void);
-  uint8_t begin(void);
+  BME680_Library(uint8_t i2c_addr = BME680_I2C_ADDR_SECONDARY);
+  boolean begin(void);
 
   uint8_t getDeviceID(void);
 };
