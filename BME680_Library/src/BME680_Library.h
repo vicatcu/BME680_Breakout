@@ -20,8 +20,15 @@ private:
   /* BME680 sensor’s heater configuration structure instance */
   struct bme680_heater_conf set_heatr_conf_sensor[1];
 
+  // these have to be static so that the class can bootstrap the driver by passing a function pointer
+  static s8 i2c_write(u8 dev_addr, u8 reg_addr, u8 *reg_data_ptr, u8 data_len);
+  static s8 i2c_read(u8 dev_addr, u8 reg_addr, u8 *reg_data_ptr, u8 data_len);
+  static s8 i2c_burst_read(u8 slave_addr, u8 reg_addr, u8 *data_u8, u32 length_u32);
+  static void delay_msec(BME680_MDELAY_DATA_TYPE);
 public:
   BME680_Library(void);
+  uint8_t begin(void);
+
 
 };
 
