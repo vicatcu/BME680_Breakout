@@ -29,7 +29,7 @@ public:
   BME680_Library(void);
   uint8_t begin(void);
 
-
+  uint8_t getDeviceID(void);
 };
 
 #endif
