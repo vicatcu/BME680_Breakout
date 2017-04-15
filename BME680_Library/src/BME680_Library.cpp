@@ -25,13 +25,41 @@ uint8_t BME680_Library::getDeviceID(void){
 }
 
 int8_t BME680_Library::i2c_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len){
+  // writes data_len bytes from buffer reg_data_ptr into I2C @ dev_addr starting at reg_addr
+  // addresses are _not_ auto-incremented
+  enum bme680_return_type ret = BME680_COMM_RES_ERROR;     // assume an error will happen
+  uint8_t num_written = 0;
 
+  Wire.beginTransmission(dev_addr); // starts queueing bytes to be written
 
+  while(num_written < data_len){    // queue a (addr / value) pair of bytes per data value
+    Wire.write(reg_addr);           // write the register address
+    Wire.write(*reg_data_ptr);      // write the register value
+    reg_addr++;                     // advance the register address
+    reg_data_ptr++;                 // advance the write value pointer
+    num_written++;                  // increment the number of bytes written
+  }
+
+  if(0 == Wire.endTransmission()){  // actually sends the queued bytes
+    // if endTransmission returns a non-zero result
+    // it's some kind of error, otherwise it's good
+    ret = BME680_COMM_RES_OK;
+  }
+
+  return ret;
 }
 
 int8_t BME680_Library::i2c_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len){
   // reads I2C @ dev_addr, asks for register address reg_addr
   // expects to read data_len bytes back and stores them in reg_data_ptr array
+  // supports up to 255 bytes because data_len is 8-bit
+  return i2c_burst_read(dev_addr, reg_addr, reg_data_ptr, (uint32_t) data_len);
+}
+
+int8_t BME680_Library::i2c_burst_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint32_t data_len){
+  // reads I2C @ dev_addr, asks for register address reg_addr
+  // expects to read data_len bytes back and stores them in reg_data_ptr array
+  // apparently in case you want more than 255 bytes because data_len is 32-bit here
 
   enum bme680_return_type ret = BME680_COMM_RES_ERROR;     // assume an error will happen
 
@@ -66,11 +94,6 @@ int8_t BME680_Library::i2c_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg
   }
 
   return ret;
-}
-
-int8_t BME680_Library::i2c_burst_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_uint8_t, uint32_t length_uint32_t){
-  // do stuff with Wire
-
 }
 
 void BME680_Library::delay_msec(BME680_MDELAY_DATA_TYPE ms){

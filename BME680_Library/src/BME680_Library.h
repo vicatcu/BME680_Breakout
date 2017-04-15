@@ -27,7 +27,7 @@ private:
   // these have to be static so that the class can bootstrap the driver by passing a function pointer
   static int8_t i2c_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len);
   static int8_t i2c_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len);
-  static int8_t i2c_burst_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_uint8_t, uint32_t length_uint32_t);
+  static int8_t i2c_burst_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint32_t data_len);
   static void delay_msec(BME680_MDELAY_DATA_TYPE);
 public:
   BME680_Library(uint8_t i2c_addr = BME680_I2C_ADDR_SECONDARY);
