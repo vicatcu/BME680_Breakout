@@ -80,9 +80,9 @@
  *	@brief This function is used to convert uncompensated gas data to
  *	compensated gas data using compensation formula(integer version)
  *
- *	@param gas_adc_u16: The value of gas resistance calculated
+ *	@param gas_adc_uint16_t: The value of gas resistance calculated
  *       using temperature
- *	@param gas_range_u8: The value of gas range form register value
+ *	@param gas_range_uint8_t: The value of gas range form register value
  *	@param bme680: structure pointer.
  *
  *	@return calculated compensated gas from compensation formula
@@ -90,13 +90,13 @@
  *
  *
 */
-s32 bme680_calculate_gas_int32(u16 gas_adc_u16, u8 gas_range_u8,
+int32_t bme680_calculate_gas_int32(uint16_t gas_adc_uint16_t, uint8_t gas_range_uint8_t,
 	struct bme680_t *bme680)
 {
-	s8 range_switching_error_val = BME680_INIT_VALUE;
+	int8_t range_switching_error_val = BME680_INIT_VALUE;
 	s64 var1 = BME680_INIT_VALUE;
 	s64 var2 = BME680_INIT_VALUE;
-	s32 gas_res = BME680_INIT_VALUE;
+	int32_t gas_res = BME680_INIT_VALUE;
 
 
 
@@ -119,13 +119,13 @@ s32 bme680_calculate_gas_int32(u16 gas_adc_u16, u8 gas_range_u8,
 
 
 	var1 = (s64)((1340 + (5 * (s64)range_switching_error_val)) *
-		((s64)lookup_k1_range[gas_range_u8])) >> 16;
-	var2 = (s64)((s64)gas_adc_u16 << 15) - (s64)(1 << 24) + var1;
+		((s64)lookup_k1_range[gas_range_uint8_t])) >> 16;
+	var2 = (s64)((s64)gas_adc_uint16_t << 15) - (s64)(1 << 24) + var1;
 	#ifndef __KERNEL__
-	gas_res = (s32)(((((s64)lookup_k2_range[gas_range_u8] *
+	gas_res = (int32_t)(((((s64)lookup_k2_range[gas_range_uint8_t] *
 		(s64)var1) >> 9) + (var2 >> 1)) / var2);
 	#else
-	gas_res = (s32)(div64_s64(((((s64)lookup_k2_range[gas_range_u8] *
+	gas_res = (int32_t)(div64_s64(((((s64)lookup_k2_range[gas_range_uint8_t] *
 		(s64)var1) >> 9) + (var2 >> 1)), var2));
 	#endif
 	return gas_res;
@@ -139,25 +139,25 @@ s32 bme680_calculate_gas_int32(u16 gas_adc_u16, u8 gas_range_u8,
  *
  *
  *
- *  @param  v_uncomp_temperature_u32 : value of uncompensated temperature
+ *  @param  v_uncomp_temperature_uint32_t : value of uncompensated temperature
  *	@param bme680: structure pointer.
  *
  *  @return Returns the compensated temperature data
  *
 */
-s32 bme680_compensate_temperature_int32(u32 v_uncomp_temperature_u32,
+int32_t bme680_compensate_temperature_int32(uint32_t v_uncomp_temperature_uint32_t,
 	struct bme680_t *bme680)
 {
-	s32 var1 = BME680_INIT_VALUE;
-	s32 var2 = BME680_INIT_VALUE;
-	s32 var3 = BME680_INIT_VALUE;
-	s32 temp_comp = BME680_INIT_VALUE;
+	int32_t var1 = BME680_INIT_VALUE;
+	int32_t var2 = BME680_INIT_VALUE;
+	int32_t var3 = BME680_INIT_VALUE;
+	int32_t temp_comp = BME680_INIT_VALUE;
 
-	var1 = ((s32)v_uncomp_temperature_u32 >> 3) -
-		((s32)bme680->cal_param.par_T1 << 1);
-	var2 = (var1 * (s32)bme680->cal_param.par_T2) >> 11;
+	var1 = ((int32_t)v_uncomp_temperature_uint32_t >> 3) -
+		((int32_t)bme680->cal_param.par_T1 << 1);
+	var2 = (var1 * (int32_t)bme680->cal_param.par_T2) >> 11;
 	var3 = ((((var1 >> 1) * (var1 >> 1)) >> 12) *
-		((s32)bme680->cal_param.par_T3 << 4)) >> 14;
+		((int32_t)bme680->cal_param.par_T3 << 4)) >> 14;
 	bme680->cal_param.t_fine = var2 + var3;
 	temp_comp = ((bme680->cal_param.t_fine * 5) + 128) >> 8;
 
@@ -177,41 +177,41 @@ s32 bme680_compensate_temperature_int32(u32 v_uncomp_temperature_u32,
  *
  *
  *
- *  @param  v_uncomp_humidity_u32: value of uncompensated humidity
+ *  @param  v_uncomp_humidity_uint32_t: value of uncompensated humidity
  *	@param bme680: structure pointer.
  *
  *  @return Return the compensated humidity data
  *
 */
-s32 bme680_compensate_humidity_int32(u32 v_uncomp_humidity_u32,
+int32_t bme680_compensate_humidity_int32(uint32_t v_uncomp_humidity_uint32_t,
 	struct bme680_t *bme680)
 {
-	s32 temp_scaled = BME680_INIT_VALUE;
-	s32 var1	= BME680_INIT_VALUE;
-	s32 var2	= BME680_INIT_VALUE;
-	s32 var3	= BME680_INIT_VALUE;
-	s32 var4	= BME680_INIT_VALUE;
-	s32 var5	= BME680_INIT_VALUE;
-	s32 var6	= BME680_INIT_VALUE;
-	s32 humidity_comp = BME680_INIT_VALUE;
+	int32_t temp_scaled = BME680_INIT_VALUE;
+	int32_t var1	= BME680_INIT_VALUE;
+	int32_t var2	= BME680_INIT_VALUE;
+	int32_t var3	= BME680_INIT_VALUE;
+	int32_t var4	= BME680_INIT_VALUE;
+	int32_t var5	= BME680_INIT_VALUE;
+	int32_t var6	= BME680_INIT_VALUE;
+	int32_t humidity_comp = BME680_INIT_VALUE;
 
-	temp_scaled = (((s32)bme680->cal_param.t_fine * 5) + 128) >> 8;
-	var1 = (s32)v_uncomp_humidity_u32 -
-		((s32)((s32)bme680->cal_param.par_H1 << 4)) -
-		(((temp_scaled * (s32)bme680->cal_param.par_H3) /
-		((s32)100)) >> 1);
+	temp_scaled = (((int32_t)bme680->cal_param.t_fine * 5) + 128) >> 8;
+	var1 = (int32_t)v_uncomp_humidity_uint32_t -
+		((int32_t)((int32_t)bme680->cal_param.par_H1 << 4)) -
+		(((temp_scaled * (int32_t)bme680->cal_param.par_H3) /
+		((int32_t)100)) >> 1);
 
-	var2 = ((s32)bme680->cal_param.par_H2 *
-		(((temp_scaled * (s32)bme680->cal_param.par_H4) /
-		((s32)100)) + (((temp_scaled *
-		((temp_scaled * (s32)bme680->cal_param.par_H5) /
-		((s32)100))) >> 6) / ((s32)100)) + (s32)(1 << 14))) >> 10;
+	var2 = ((int32_t)bme680->cal_param.par_H2 *
+		(((temp_scaled * (int32_t)bme680->cal_param.par_H4) /
+		((int32_t)100)) + (((temp_scaled *
+		((temp_scaled * (int32_t)bme680->cal_param.par_H5) /
+		((int32_t)100))) >> 6) / ((int32_t)100)) + (int32_t)(1 << 14))) >> 10;
 
 	var3 = var1 * var2;
 
-	var4 = ((((s32)bme680->cal_param.par_H6) << 7) +
-		((temp_scaled * (s32)bme680->cal_param.par_H7) /
-		((s32)100))) >> 4;
+	var4 = ((((int32_t)bme680->cal_param.par_H6) << 7) +
+		((temp_scaled * (int32_t)bme680->cal_param.par_H7) /
+		((int32_t)100))) >> 4;
 
 	var5 = ((var3 >> 14) * (var3 >> 14)) >> 10;
 	var6 = (var4 * var5) >> 1;
@@ -237,48 +237,48 @@ s32 bme680_compensate_humidity_int32(u32 v_uncomp_humidity_u32,
  *
  *
  *
- *  @param v_uncomp_pressure_u32 : value of uncompensated pressure
+ *  @param v_uncomp_pressure_uint32_t : value of uncompensated pressure
  *	@param bme680: structure pointer.
  *
  *  @return Return the compensated pressure data
  *
 */
-s32 bme680_compensate_pressure_int32(u32 v_uncomp_pressure_u32,
+int32_t bme680_compensate_pressure_int32(uint32_t v_uncomp_pressure_uint32_t,
 	struct bme680_t *bme680)
 {
-	s32 var1 = BME680_INIT_VALUE;
-	s32 var2 = BME680_INIT_VALUE;
-	s32 var3 = BME680_INIT_VALUE;
-	s32 var4 = BME680_INIT_VALUE;
-	s32 pressure_comp = BME680_INIT_VALUE;
+	int32_t var1 = BME680_INIT_VALUE;
+	int32_t var2 = BME680_INIT_VALUE;
+	int32_t var3 = BME680_INIT_VALUE;
+	int32_t var4 = BME680_INIT_VALUE;
+	int32_t pressure_comp = BME680_INIT_VALUE;
 
-	var1 = (((s32)bme680->cal_param.t_fine) >> 1) - 64000;
+	var1 = (((int32_t)bme680->cal_param.t_fine) >> 1) - 64000;
 	var2 = ((((var1 >> 2) * (var1 >> 2)) >> 11) *
-		(s32)bme680->cal_param.par_P6) >> 2;
-	var2 = var2 + ((var1 * (s32)bme680->cal_param.par_P5) << 1);
-	var2 = (var2 >> 2) + ((s32)bme680->cal_param.par_P4 << 16);
+		(int32_t)bme680->cal_param.par_P6) >> 2;
+	var2 = var2 + ((var1 * (int32_t)bme680->cal_param.par_P5) << 1);
+	var2 = (var2 >> 2) + ((int32_t)bme680->cal_param.par_P4 << 16);
 	var1 = (((((var1 >> 2) * (var1 >> 2)) >> 13) *
-		((s32)bme680->cal_param.par_P3 << 5)) >> 3) +
-		(((s32)bme680->cal_param.par_P2 * var1) >> 1);
+		((int32_t)bme680->cal_param.par_P3 << 5)) >> 3) +
+		(((int32_t)bme680->cal_param.par_P2 * var1) >> 1);
 	var1 = var1 >> 18;
-	var1 = ((32768 + var1) * (s32)bme680->cal_param.par_P1) >> 15;
-	pressure_comp = 1048576 - v_uncomp_pressure_u32;
-	pressure_comp = (s32)((pressure_comp - (var2 >> 12)) * ((u32)3125));
+	var1 = ((32768 + var1) * (int32_t)bme680->cal_param.par_P1) >> 15;
+	pressure_comp = 1048576 - v_uncomp_pressure_uint32_t;
+	pressure_comp = (int32_t)((pressure_comp - (var2 >> 12)) * ((uint32_t)3125));
 	var4 = (1 << 31);
 	if (pressure_comp >= var4)
-		pressure_comp = ((pressure_comp / (u32)var1) << 1);
+		pressure_comp = ((pressure_comp / (uint32_t)var1) << 1);
 	else
-		pressure_comp = ((pressure_comp << 1) / (u32)var1);
-	var1 = ((s32)bme680->cal_param.par_P9 * (s32)(((pressure_comp >> 3) *
+		pressure_comp = ((pressure_comp << 1) / (uint32_t)var1);
+	var1 = ((int32_t)bme680->cal_param.par_P9 * (int32_t)(((pressure_comp >> 3) *
 		(pressure_comp >> 3)) >> 13)) >> 12;
-	var2 = ((s32)(pressure_comp >> 2) *
-		(s32)bme680->cal_param.par_P8) >> 13;
-	var3 = ((s32)(pressure_comp >> 8) * (s32)(pressure_comp >> 8) *
-		(s32)(pressure_comp >> 8) *
-		(s32)bme680->cal_param.par_P10) >> 17;
+	var2 = ((int32_t)(pressure_comp >> 2) *
+		(int32_t)bme680->cal_param.par_P8) >> 13;
+	var3 = ((int32_t)(pressure_comp >> 8) * (int32_t)(pressure_comp >> 8) *
+		(int32_t)(pressure_comp >> 8) *
+		(int32_t)bme680->cal_param.par_P10) >> 17;
 
-	pressure_comp = (s32)(pressure_comp) + ((var1 + var2 + var3 +
-		((s32)bme680->cal_param.par_P7 << 7)) >> 4);
+	pressure_comp = (int32_t)(pressure_comp) + ((var1 + var2 + var3 +
+		((int32_t)bme680->cal_param.par_P7 << 7)) >> 4);
 
 	return pressure_comp;
 }
@@ -286,8 +286,8 @@ s32 bme680_compensate_pressure_int32(u32 v_uncomp_pressure_u32,
  *	@brief This function is used to convert temperature to resistance
  *	using the integer compensation formula
  *
- *	@param heater_temp_u16: The value of heater temperature
- *	@param ambient_temp_s16: The value of ambient temperature
+ *	@param heater_temp_uint16_t: The value of heater temperature
+ *	@param ambient_temp_int16_t: The value of ambient temperature
  *	@param bme680: structure pointer.
  *
  *	@return calculated resistance from temperature
@@ -295,33 +295,33 @@ s32 bme680_compensate_pressure_int32(u32 v_uncomp_pressure_u32,
  *
  *
 */
-u8 bme680_convert_temperature_to_resistance_int32(u16 heater_temp_u16,
-	s16 ambient_temp_s16, struct bme680_t *bme680)
+uint8_t bme680_convert_temperature_to_resistance_int32(uint16_t heater_temp_uint16_t,
+	int16_t ambient_temp_int16_t, struct bme680_t *bme680)
 {
-	s32 var1 = BME680_INIT_VALUE;
-	s32 var2 = BME680_INIT_VALUE;
-	s32 var3 = BME680_INIT_VALUE;
-	s32 var4 = BME680_INIT_VALUE;
-	s32 var5 = BME680_INIT_VALUE;
-	s32 res_heat_x100 = BME680_INIT_VALUE;
-	u8 res_heat = BME680_INIT_VALUE;
+	int32_t var1 = BME680_INIT_VALUE;
+	int32_t var2 = BME680_INIT_VALUE;
+	int32_t var3 = BME680_INIT_VALUE;
+	int32_t var4 = BME680_INIT_VALUE;
+	int32_t var5 = BME680_INIT_VALUE;
+	int32_t res_heat_x100 = BME680_INIT_VALUE;
+	uint8_t res_heat = BME680_INIT_VALUE;
 
 
-	if ((heater_temp_u16 >= BME680_GAS_PROFILE_TEMPERATURE_MIN)
-	&& (heater_temp_u16 <= BME680_GAS_PROFILE_TEMPERATURE_MAX)) {
+	if ((heater_temp_uint16_t >= BME680_GAS_PROFILE_TEMPERATURE_MIN)
+	&& (heater_temp_uint16_t <= BME680_GAS_PROFILE_TEMPERATURE_MAX)) {
 
-		var1 = (((s32)ambient_temp_s16 *
+		var1 = (((int32_t)ambient_temp_int16_t *
 			bme680->cal_param.par_GH3) / 10) << 8;
 		var2 = (bme680->cal_param.par_GH1 + 784) *
 			(((((bme680->cal_param.par_GH2 + 154009) *
-			heater_temp_u16 * 5) / 100) + 3276800) / 10);
+			heater_temp_uint16_t * 5) / 100) + 3276800) / 10);
 		var3 = var1 + (var2 >> 1);
 		var4 = (var3 / (bme680->cal_param.res_heat_range + 4));
 
 		var5 = (131 * bme680->cal_param.res_heat_val) + 65536;
 
-		res_heat_x100 = (s32)(((var4 / var5) - 250) * 34);
-		res_heat = (u8) ((res_heat_x100 + 50) / 100);
+		res_heat_x100 = (int32_t)(((var4 / var5) - 250) * 34);
+		res_heat = (uint8_t) ((res_heat_x100 + 50) / 100);
 
 	}
 	return res_heat;
@@ -334,22 +334,22 @@ u8 bme680_convert_temperature_to_resistance_int32(u16 heater_temp_u16,
  *
  *
  *
- *  @param v_uncomp_humidity_u32: value of uncompensated humidity
+ *  @param v_uncomp_humidity_uint32_t: value of uncompensated humidity
  *	@param bme680: structure pointer.
  *
- *  @return Return the actual relative humidity output as u16
+ *  @return Return the actual relative humidity output as uint16_t
  *
 */
-u16 bme680_compensate_H_int32_sixteen_bit_output(u32 v_uncomp_humidity_u32,
+uint16_t bme680_compensate_H_int32_sixteen_bit_output(uint32_t v_uncomp_humidity_uint32_t,
 	struct bme680_t *bme680)
 {
-	u32 v_x1_u32 = BME680_INIT_VALUE;
-	u16 v_x2_u32 = BME680_INIT_VALUE;
+	uint32_t v_x1_uint32_t = BME680_INIT_VALUE;
+	uint16_t v_x2_uint32_t = BME680_INIT_VALUE;
 
-	v_x1_u32 = (u32) bme680_compensate_humidity_int32(
-	v_uncomp_humidity_u32, bme680);
-	v_x2_u32 = (u16)(v_x1_u32 >> 1);
-	return v_x2_u32;
+	v_x1_uint32_t = (uint32_t) bme680_compensate_humidity_int32(
+	v_uncomp_humidity_uint32_t, bme680);
+	v_x2_uint32_t = (uint16_t)(v_x1_uint32_t >> 1);
+	return v_x2_uint32_t;
 }
 
 /*!
@@ -358,20 +358,20 @@ u16 bme680_compensate_H_int32_sixteen_bit_output(u32 v_uncomp_humidity_u32,
  * output value of "5123" equals(5123/500)+24 = 34.246DegC
  *
  *
- *  @param v_uncomp_temperature_u32: value of uncompensated temperature
+ *  @param v_uncomp_temperature_uint32_t: value of uncompensated temperature
  *	@param bme680: structure pointer.
  *
  *
- *  @return Return the actual temperature as s16 output
+ *  @return Return the actual temperature as int16_t output
  *
 */
-s16 bme680_compensate_T_int32_sixteen_bit_output(u32 v_uncomp_temperature_u32,
+int16_t bme680_compensate_T_int32_sixteen_bit_output(uint32_t v_uncomp_temperature_uint32_t,
 	struct bme680_t *bme680)
 {
-	s16 temperature = BME680_INIT_VALUE;
+	int16_t temperature = BME680_INIT_VALUE;
 
-	bme680_compensate_temperature_int32(v_uncomp_temperature_u32, bme680);
-	temperature  = (s16)((((
+	bme680_compensate_temperature_int32(v_uncomp_temperature_uint32_t, bme680);
+	temperature  = (int16_t)((((
 		bme680->cal_param.t_fine - 122880) * 25) + 128) >> 8);
 
 	return temperature;
@@ -385,20 +385,20 @@ s16 bme680_compensate_T_int32_sixteen_bit_output(u32 v_uncomp_temperature_u32,
  *
  *
  *
- *  @param v_uncomp_pressure_u32 : value of uncompensated pressure
+ *  @param v_uncomp_pressure_uint32_t : value of uncompensated pressure
  *	@param bme680: structure pointer.
  *
- *  @return the actual pressure in u32
+ *  @return the actual pressure in uint32_t
  *
 */
-u32 bme680_compensate_P_int32_twentyfour_bit_output(u32 v_uncomp_pressure_u32,
+uint32_t bme680_compensate_P_int32_twentyfour_bit_output(uint32_t v_uncomp_pressure_uint32_t,
 	struct bme680_t *bme680)
 {
-	u32 pressure = BME680_INIT_VALUE;
+	uint32_t pressure = BME680_INIT_VALUE;
 
-	pressure = (u32)bme680_compensate_pressure_int32(
-		v_uncomp_pressure_u32, bme680);
-	pressure = (u32)(pressure >> 1);
+	pressure = (uint32_t)bme680_compensate_pressure_int32(
+		v_uncomp_pressure_uint32_t, bme680);
+	pressure = (uint32_t)(pressure >> 1);
 	return pressure;
 }
 #else
@@ -406,9 +406,9 @@ u32 bme680_compensate_P_int32_twentyfour_bit_output(u32 v_uncomp_pressure_u32,
  *	@brief This function is used to convert uncompensated gas data to
  *	compensated gas data using compensation formula
  *
- *	@param gas_adc_u16: The value of gas resistance calculated
+ *	@param gas_adc_uint16_t: The value of gas resistance calculated
  *       using temperature
- *	@param gas_range_u8: The value of gas range form register value
+ *	@param gas_range_uint8_t: The value of gas range form register value
  *	@param bme680: structure pointer.
  *
  *	@return calculated compensated gas from compensation formula
@@ -417,7 +417,7 @@ u32 bme680_compensate_P_int32_twentyfour_bit_output(u32 v_uncomp_pressure_u32,
  *
 */
 
-double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
+double bme680_compensate_gas_double(uint16_t gas_adc_uint16_t, uint8_t gas_range_uint8_t,
 	struct bme680_t *bme680)
 {
 	double gas_res_d = BME680_INIT_VALUE;
@@ -431,7 +431,7 @@ double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
 	const double lookup_k2_range[BME680_GAS_RANGE_RL_LENGTH] = {
 	0.0, 0.0, 0.0, 0.0, 0.1, 0.7, 0.0, -0.8,
 	-0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-	s8 range_switching_error_val = BME680_INIT_VALUE;
+	int8_t range_switching_error_val = BME680_INIT_VALUE;
 	double var1 = BME680_INIT_VALUE;
 	double var2 = BME680_INIT_VALUE;
 	double var3 = BME680_INIT_VALUE;
@@ -443,16 +443,16 @@ double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
 
 
 	var1 = (1340.0 + (5.0 * range_switching_error_val));
-	var2 = (var1) * (1.0 + lookup_k1_range[gas_range_u8]/100.0);
-	var3 = 1.0 + (lookup_k2_range[gas_range_u8]/100.0);
+	var2 = (var1) * (1.0 + lookup_k1_range[gas_range_uint8_t]/100.0);
+	var3 = 1.0 + (lookup_k2_range[gas_range_uint8_t]/100.0);
 
 	gas_res_d = 1.0 / (double)(var3 * (0.000000125) *
-		(double)(1 << gas_range_u8)
-		* (((((double)gas_adc_u16) - 512.00)/var2) + 1.0));
+		(double)(1 << gas_range_uint8_t)
+		* (((((double)gas_adc_uint16_t) - 512.00)/var2) + 1.0));
 
 #else
-	gas_res_d = 1.0 / ((0.000000125) * (double)(1 << gas_range_u8) *
-		((((double)(gas_adc_u16) - 512.00) / 1365.3333) + 1.0));
+	gas_res_d = 1.0 / ((0.000000125) * (double)(1 << gas_range_uint8_t) *
+		((((double)(gas_adc_uint16_t) - 512.00) / 1365.3333) + 1.0));
 #endif
 	return gas_res_d;
 }
@@ -465,7 +465,7 @@ double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
  * @note returns the value in relative humidity (%rH)
  * @note Output value of "42.12" equals 42.12 %rH
  *
- *  @param uncom_humidity_u16 : value of uncompensated humidity
+ *  @param uncom_humidity_uint16_t : value of uncompensated humidity
  *  @param comp_temperature   : value of compensated temperature
  *	@param bme680: structure pointer.
  *
@@ -473,7 +473,7 @@ double bme680_compensate_gas_double(u16 gas_adc_u16, u8 gas_range_u8,
  *  @return Return the compensated humidity data in floating point
  *
 */
-double bme680_compensate_humidity_double(u16 uncom_humidity_u16,
+double bme680_compensate_humidity_double(uint16_t uncom_humidity_uint16_t,
 	double comp_temperature, struct bme680_t *bme680)
 {
 	double humidity_comp = BME680_INIT_VALUE;
@@ -482,7 +482,7 @@ double bme680_compensate_humidity_double(u16 uncom_humidity_u16,
 	double var3 = BME680_INIT_VALUE;
 	double var4 = BME680_INIT_VALUE;
 
-	var1 = (double)((double)uncom_humidity_u16) - (((double)
+	var1 = (double)((double)uncom_humidity_uint16_t) - (((double)
 	bme680->cal_param.par_H1 * 16.0) +
 		(((double)bme680->cal_param.par_H3 / 2.0)
 		* comp_temperature));
@@ -513,13 +513,13 @@ double bme680_compensate_humidity_double(u16 uncom_humidity_u16,
  * equals 96386.2 Pa = 963.862 hPa.
  *
  *
- *  @param uncom_pressure_u32 : value of uncompensated pressure
+ *  @param uncom_pressure_uint32_t : value of uncompensated pressure
  *	@param bme680: structure pointer.
  *
  *  @return  Return the compensated pressure data in floating point
  *
 */
-double bme680_compensate_pressure_double(u32 uncom_pressure_u32,
+double bme680_compensate_pressure_double(uint32_t uncom_pressure_uint32_t,
 	struct bme680_t *bme680)
 {
 	double data1_d = BME680_INIT_VALUE;
@@ -539,7 +539,7 @@ double bme680_compensate_pressure_double(u32 uncom_pressure_u32,
 		* data1_d)) / 524288.0);
 	data1_d = ((1.0 + (data1_d / 32768.0)) *
 		((double)bme680->cal_param.par_P1));
-	pressure_comp = (1048576.0 - ((double)uncom_pressure_u32));
+	pressure_comp = (1048576.0 - ((double)uncom_pressure_uint32_t));
 	/* Avoid exception caused by division by zero */
 	if ((int)data1_d != BME680_INIT_VALUE) {
 		pressure_comp = (((pressure_comp - (data2_d
@@ -568,30 +568,30 @@ double bme680_compensate_pressure_double(u32 uncom_pressure_u32,
  * @note returns the value in Degree centigrade
  * @note Output value of "51.23" equals 51.23 DegC.
  *
- *  @param uncom_temperature_u32 : value of uncompensated temperature
+ *  @param uncom_temperature_uint32_t : value of uncompensated temperature
  *	@param bme680: structure pointer.
  *
  *  @return  Return the actual temperature in floating point
  *
 */
-double bme680_compensate_temperature_double(u32 uncom_temperature_u32,
+double bme680_compensate_temperature_double(uint32_t uncom_temperature_uint32_t,
 	struct bme680_t *bme680)
 {
 	double data1_d = BME680_INIT_VALUE;
 	double data2_d = BME680_INIT_VALUE;
 	double temperature = BME680_INIT_VALUE;
 	/* calculate x1 data */
-	data1_d  = ((((double)uncom_temperature_u32 / 16384.0)
+	data1_d  = ((((double)uncom_temperature_uint32_t / 16384.0)
 		- ((double)bme680->cal_param.par_T1 / 1024.0))
 		* ((double)bme680->cal_param.par_T2));
 	/* calculate x2 data */
-	data2_d  = (((((double)uncom_temperature_u32 / 131072.0) -
+	data2_d  = (((((double)uncom_temperature_uint32_t / 131072.0) -
 		((double)bme680->cal_param.par_T1 / 8192.0)) *
-		(((double)uncom_temperature_u32 / 131072.0) -
+		(((double)uncom_temperature_uint32_t / 131072.0) -
 		((double)bme680->cal_param.par_T1 / 8192.0))) *
 		((double)bme680->cal_param.par_T3 * 16.0));
 	/* t fine value*/
-	bme680->cal_param.t_fine = (s32)(data1_d + data2_d);
+	bme680->cal_param.t_fine = (int32_t)(data1_d + data2_d);
 	/* compensated temperature data*/
 	temperature  = ((data1_d + data2_d) /
 		5120.0);
@@ -605,8 +605,8 @@ double bme680_compensate_temperature_double(u32 uncom_temperature_u32,
  *	@brief This function is used to convert temperature to resistance
  *	using the compensation formula
  *
- *	@param heater_temp_u16: The value of heater temperature
- *	@param ambient_temp_s16: The value of ambient temperature
+ *	@param heater_temp_uint16_t: The value of heater temperature
+ *	@param ambient_temp_int16_t: The value of ambient temperature
  *	@param bme680: structure pointer.
  *
  *	@return calculated resistance from temperature
@@ -614,8 +614,8 @@ double bme680_compensate_temperature_double(u32 uncom_temperature_u32,
  *
  *
 */
-double bme680_convert_temperature_to_resistance_double(u16 heater_temp_u16,
-	s16 ambient_temp_s16, struct bme680_t *bme680)
+double bme680_convert_temperature_to_resistance_double(uint16_t heater_temp_uint16_t,
+	int16_t ambient_temp_int16_t, struct bme680_t *bme680)
 {
 	double var1 = BME680_INIT_VALUE;
 	double var2 = BME680_INIT_VALUE;
@@ -624,19 +624,19 @@ double bme680_convert_temperature_to_resistance_double(u16 heater_temp_u16,
 	double var5 = BME680_INIT_VALUE;
 	double res_heat = BME680_INIT_VALUE;
 
-	if ((heater_temp_u16 >= BME680_GAS_PROFILE_TEMPERATURE_MIN)
-	&& (heater_temp_u16 <= BME680_GAS_PROFILE_TEMPERATURE_MAX)) {
+	if ((heater_temp_uint16_t >= BME680_GAS_PROFILE_TEMPERATURE_MIN)
+	&& (heater_temp_uint16_t <= BME680_GAS_PROFILE_TEMPERATURE_MAX)) {
 #ifdef	HEATER_C1_ENABLE
 		var1 = (((double)bme680->cal_param.par_GH1 / (16.0)) + 49.0);
 		var2 = ((((double)bme680->cal_param.par_GH2
 			/(32768.0)) * (0.0005)) + 0.00235);
 #endif
 		var3 = ((double)bme680->cal_param.par_GH3 / (1024.0));
-		var4 = (var1 * (1.0 + (var2 * (double)heater_temp_u16)));
-		var5 = (var4 + (var3 * (double)ambient_temp_s16));
+		var4 = (var1 * (1.0 + (var2 * (double)heater_temp_uint16_t)));
+		var5 = (var4 + (var3 * (double)ambient_temp_int16_t));
 
 #ifdef	HEATER_C1_ENABLE
-		res_heat = (u8)(3.4 * ((var5 *
+		res_heat = (uint8_t)(3.4 * ((var5 *
 			(4 / (4 + (double)bme680->cal_param.res_heat_range)) *
 			(1/(1 + ((double)bme680->cal_param.res_heat_val
 			* 0.002)))) - 25));
@@ -647,7 +647,7 @@ double bme680_convert_temperature_to_resistance_double(u16 heater_temp_u16,
 #endif
 
 	}
-	return (u8)res_heat;
+	return (uint8_t)res_heat;
 }
 
 #endif

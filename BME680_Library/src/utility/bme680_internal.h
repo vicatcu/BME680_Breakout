@@ -90,9 +90,9 @@
 #define BME680_TRUE					(1)
 #define BME680_FALSE					(0)
 
-#define BME680_CALIB_PARAM_SIZE				((u8)41)
-#define BME680_PAGE0_INTERFACE_SPI			((u8)0)
-#define BME680_PAGE1_INTERFACE_SPI			((u8)1)
+#define BME680_CALIB_PARAM_SIZE				((uint8_t)41)
+#define BME680_PAGE0_INTERFACE_SPI			((uint8_t)0)
+#define BME680_PAGE1_INTERFACE_SPI			((uint8_t)1)
 #define BME680_CALIB_DATA_LENGTH_GAS			(25)
 #define BME680_CALIB_DATA_LENGTH			(16)
 #define	BME680_BIT_MASK_H1_DATA				(0x0F)
@@ -221,16 +221,16 @@
 /*!
 @brief data frame includes temperature, pressure, humidity
 and gas data*/
-#define	BME680_DATA_FRAME_PRESSURE_MSB_DATA		((u8)2)
-#define	BME680_DATA_FRAME_PRESSURE_LSB_DATA		((u8)3)
-#define	BME680_DATA_FRAME_PRESSURE_XLSB_DATA		((u8)4)
-#define	BME680_DATA_FRAME_TEMPERATURE1_MSB_DATA		((u8)5)
-#define	BME680_DATA_FRAME_TEMPERATURE1_LSB_DATA		((u8)6)
-#define	BME680_DATA_FRAME_TEMPERATURE1_XLSB_DATA	((u8)7)
-#define	BME680_DATA_FRAME_HUMIDITY_MSB_DATA		((u8)8)
-#define	BME680_DATA_FRAME_HUMIDITY_LSB_DATA		((u8)9)
-#define	BME680_DATA_FRAME_GAS_MSB_DATA			((u8)13)
-#define	BME680_DATA_FRAME_GAS_LSB_DATA			((u8)14)
+#define	BME680_DATA_FRAME_PRESSURE_MSB_DATA		((uint8_t)2)
+#define	BME680_DATA_FRAME_PRESSURE_LSB_DATA		((uint8_t)3)
+#define	BME680_DATA_FRAME_PRESSURE_XLSB_DATA		((uint8_t)4)
+#define	BME680_DATA_FRAME_TEMPERATURE1_MSB_DATA		((uint8_t)5)
+#define	BME680_DATA_FRAME_TEMPERATURE1_LSB_DATA		((uint8_t)6)
+#define	BME680_DATA_FRAME_TEMPERATURE1_XLSB_DATA	((uint8_t)7)
+#define	BME680_DATA_FRAME_HUMIDITY_MSB_DATA		((uint8_t)8)
+#define	BME680_DATA_FRAME_HUMIDITY_LSB_DATA		((uint8_t)9)
+#define	BME680_DATA_FRAME_GAS_MSB_DATA			((uint8_t)13)
+#define	BME680_DATA_FRAME_GAS_LSB_DATA			((uint8_t)14)
 
 
 /* Positions to support indexing in an array */
@@ -268,8 +268,8 @@ and gas data*/
 #define BME680_TWO					(2)
 #define BME680_THREE					(3)
 
-#define BME680_GEN_READ_DATA_LENGTH			((u8)1)
-#define BME680_GEN_WRITE_DATA_LENGTH			((u8)1)
+#define BME680_GEN_READ_DATA_LENGTH			((uint8_t)1)
+#define BME680_GEN_WRITE_DATA_LENGTH			((uint8_t)1)
 
 /* bme680_internal.h */
 /***************************************************************************

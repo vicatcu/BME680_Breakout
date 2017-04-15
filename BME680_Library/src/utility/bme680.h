@@ -75,10 +75,7 @@ Example: 2.0.0 */
 /***************************************************************************
 			Header files
 ****************************************************************************/
-#include "sensor_api_common_types.h"
-
-
-/* sensor_api_common_types.h */
+#include <stdint.h>
 
 /************************************************************************
 			Macros, Enums, Constants
@@ -110,20 +107,20 @@ Example: 2.0.0 */
 
 
 /**< function pointer to the SPI or I2C burst read function */
-typedef s8 (*sensor_burst_read)(u8 slave_addr, u8 reg_addr, u8 *data_u8,
-	u32 length_u32);
+typedef int8_t (*sensor_burst_read)(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_uint8_t,
+	uint32_t length_uint32_t);
 
-typedef  s8 (*sensor_write)(u8 dev_addr, u8 reg_addr, u8 *reg_data_ptr,
-	u8 data_len);
+typedef  int8_t (*sensor_write)(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr,
+	uint8_t data_len);
 /**< function pointer for Write operation in either I2C or SPI*/
-typedef  s8 (*sensor_read)(u8 dev_addr, u8 reg_addr, u8 *reg_data_ptr,
-	u8 data_len);
+typedef  int8_t (*sensor_read)(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr,
+	uint8_t data_len);
 /**< function pointer for Read operation in either I2C or SPI*/
 
 #define BME680_MAX_NO_OF_SENSOR			(2)
 /**< This macro used for maximum number of sensor*/
 
-#define BME680_MDELAY_DATA_TYPE			u32
+#define BME680_MDELAY_DATA_TYPE			uint32_t
 /**< This macro used for delay*/
 
 #define BME680_CHIP_ID				(0x61)
@@ -193,8 +190,8 @@ float value into fixed point  */
 /***************************************************************/
 /* Constants */
 #define BME680_NULL_PTR				((void *)0)
-#define BME680_RETURN_FUNCTION_TYPE		s8
-#define BME680_INIT_VALUE			((u8)0)
+#define BME680_RETURN_FUNCTION_TYPE		int8_t
+#define BME680_INIT_VALUE			((uint8_t)0)
 
 
 /* Section 3.5: Function macros */
@@ -215,33 +212,33 @@ float value into fixed point  */
  */
 struct  bme680_calibration_param_t {
 
-	s8  par_T3;/**<calibration T3 data*/
-	s8  par_P3;/**<calibration P3 data*/
-	s8  par_P6;/**<calibration P6 data*/
-	s8  par_P7;/**<calibration P7 data*/
-	u8  par_P10;/**<calibration P10 data*/
-	s8  par_H3;/**<calibration H3 data*/
-	s8  par_H4;/**<calibration H4 data*/
-	s8  par_H5;/**<calibration H5 data*/
-	u8  par_H6;/**<calibration H6 data*/
-	s8  par_H7;/**<calibration H7 data*/
-	s8  par_GH1;/**<calibration GH1 data*/
-	u8  res_heat_range;/**<resistance calculation*/
-	s8  res_heat_val; /**<correction factor*/
-	s8  range_switching_error;/**<range switching error*/
-	s16 par_GH2;/**<calibration GH2 data*/
-	u16 par_T1;/**<calibration T1 data*/
-	s16 par_T2;/**<calibration T2 data*/
-	u16 par_P1;/**<calibration P1 data*/
-	s16 par_P2;/**<calibration P2 data*/
-	s16 par_P4;/**<calibration P4 data*/
-	s16 par_P5;/**<calibration P5 data*/
-	s16 par_P8;/**<calibration P8 data*/
-	s16 par_P9;/**<calibration P9 data*/
-	u16 par_H1;/**<calibration H1 data*/
-	u16 par_H2;/**<calibration H2 data*/
-	s32 t_fine;/**<calibration T_FINE data*/
-	s8  par_GH3;/**<calibration GH3 data*/
+	int8_t  par_T3;/**<calibration T3 data*/
+	int8_t  par_P3;/**<calibration P3 data*/
+	int8_t  par_P6;/**<calibration P6 data*/
+	int8_t  par_P7;/**<calibration P7 data*/
+	uint8_t  par_P10;/**<calibration P10 data*/
+	int8_t  par_H3;/**<calibration H3 data*/
+	int8_t  par_H4;/**<calibration H4 data*/
+	int8_t  par_H5;/**<calibration H5 data*/
+	uint8_t  par_H6;/**<calibration H6 data*/
+	int8_t  par_H7;/**<calibration H7 data*/
+	int8_t  par_GH1;/**<calibration GH1 data*/
+	uint8_t  res_heat_range;/**<resistance calculation*/
+	int8_t  res_heat_val; /**<correction factor*/
+	int8_t  range_switching_error;/**<range switching error*/
+	int16_t par_GH2;/**<calibration GH2 data*/
+	uint16_t par_T1;/**<calibration T1 data*/
+	int16_t par_T2;/**<calibration T2 data*/
+	uint16_t par_P1;/**<calibration P1 data*/
+	int16_t par_P2;/**<calibration P2 data*/
+	int16_t par_P4;/**<calibration P4 data*/
+	int16_t par_P5;/**<calibration P5 data*/
+	int16_t par_P8;/**<calibration P8 data*/
+	int16_t par_P9;/**<calibration P9 data*/
+	uint16_t par_H1;/**<calibration H1 data*/
+	uint16_t par_H2;/**<calibration H2 data*/
+	int32_t t_fine;/**<calibration T_FINE data*/
+	int8_t  par_GH3;/**<calibration GH3 data*/
 };
 /*!
 *	@brief bme680 structure
@@ -251,21 +248,21 @@ struct  bme680_calibration_param_t {
 struct  bme680_t {
 	struct bme680_calibration_param_t cal_param;
 	/**<This structure holds all the calibration parameters */
-	u8 latest_field_index;
+	uint8_t latest_field_index;
 	/**<stores the field index of latest data */
-	u8 recent_field_index;
+	uint8_t recent_field_index;
 	/**<stores the field index of recent data */
-	u8 old_field_index;
+	uint8_t old_field_index;
 	/**<stores the field index of old data */
 
 	/**< The structure stores the calibration values*/
-	u8 chip_id;
+	uint8_t chip_id;
 	/**< used to save the bme680's chip id*/
-	u8 dev_addr;
+	uint8_t dev_addr;
 	/**< used to store the I2C address*/
-	u8 last_set_mode;
+	uint8_t last_set_mode;
 	/**< used to store the last set power mode*/
-	u8 interface;
+	uint8_t interface;
 	/**< used to store the communication protocol*/
 	sensor_write bme680_bus_write;
 	/**< function pointer to the SPI or I2C write function */
@@ -283,15 +280,15 @@ struct  bme680_t {
  */
 struct bme680_heater_conf {
 
-	u8 heatr_idacv[BME680_MAX_PROFILES];
+	uint8_t heatr_idacv[BME680_MAX_PROFILES];
 	/**< used to store the idac parameter */
-	u16 heatr_dur_shared;
+	uint16_t heatr_dur_shared;
 	/**< variable to store heater duration for parallel mode */
-	u16 heater_temp[BME680_MAX_PROFILES];
+	uint16_t heater_temp[BME680_MAX_PROFILES];
 	/**< variable to store heater resistance */
-	u16 heatr_dur[BME680_MAX_PROFILES];
+	uint16_t heatr_dur[BME680_MAX_PROFILES];
 	/**< variable to store heater duration for force and sequential mode*/
-	u8 profile_cnt;
+	uint8_t profile_cnt;
 	/**< variable to store profile count for user reference */
 };
 
@@ -336,7 +333,7 @@ enum  bme680_run_gas {
  */
 enum bme680_heatr_ctrl {
 	BME680_HEATR_CTRL_ENABLE,
-	BME680_HEATR_CTRL_DISABLE	
+	BME680_HEATR_CTRL_DISABLE
 };
 /*!
  *	@brief This enum holds osrs setting
@@ -404,7 +401,7 @@ enum bme680_nb_conv {
  *	parameters
  */
 struct  bme680_sens_conf {
-	s8 nb_conv;
+	int8_t nb_conv;
 	/**< variable to store nb conversion */
 	enum bme680_heatr_ctrl heatr_ctrl;
 	/**< instance of heater control */
@@ -430,19 +427,19 @@ struct  bme680_sens_conf {
  *	parameters
  */
 struct bme680_status {
-	u8 new_data;
+	uint8_t new_data;
 	/**<New data flag */
-	u8 gas_meas_stat;
+	uint8_t gas_meas_stat;
 	/**<Gas measuring status */
-	u8 tphg_meas_stat;
+	uint8_t tphg_meas_stat;
 	/**<TPHG status */
-	u8 gas_meas_index;
+	uint8_t gas_meas_index;
 	/**<Gas measuring index */
-	u8 meas_index;
+	uint8_t meas_index;
 	/**<Measurement index */
-	u8 gas_valid;
+	uint8_t gas_valid;
 	/**<gas data valid check */
-	u8 heatr_stab;
+	uint8_t heatr_stab;
 	/**<stability check */
 };
 
@@ -455,13 +452,13 @@ struct bme680_comp_field_data {
 
 	#ifdef FIXED_POINT_COMPENSATION
 
-	s32 comp_pressure;
+	int32_t comp_pressure;
 	/**< the value of field2 compensated pressure*/
-	s32 comp_temperature1;
+	int32_t comp_temperature1;
 	/**< the value of field2 compensated temperature1*/
-	s32 comp_humidity;
+	int32_t comp_humidity;
 	/**< the value of field2 compensated humidity*/
-	s32 comp_gas;
+	int32_t comp_gas;
 	/**< the value of field2 compensated gas*/
 
 	#else
@@ -485,17 +482,17 @@ struct  bme680_uncomp_field_data {
 	/**< data field status*/
 	struct bme680_status status;
 
-	u8 gas_range;
+	uint8_t gas_range;
 	/**<Range index of the back-end of the ADC */
 	#ifdef FIXED_POINT_COMPENSATION
 
-	u32 pres_adcv;
+	uint32_t pres_adcv;
 	/**< the value of field2 uncompensated pressure*/
-	u32 temp_adcv;
+	uint32_t temp_adcv;
 	/**< the value of field2 uncompensated temperature1*/
-	u16 hum_adcv;
+	uint16_t hum_adcv;
 	/**< the value of field2 uncompensated humidity*/
-	u16 gas_res_adcv;
+	uint16_t gas_res_adcv;
 	/**< the value of field2 uncompensated gas*/
 
 	#else
@@ -532,14 +529,14 @@ enum bme680_return_type bme680_init(struct bme680_t *bme680);
  * @brief This function is used to write the data to
  * the given register
  */
-enum bme680_return_type bme680_write_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
+enum bme680_return_type bme680_write_reg(uint8_t addr_uint8_t, uint8_t *data_uint8_t, uint8_t len_uint8_t,
 	struct bme680_t *bme680);
 
 /*!
  * @brief This function is used to reads the data from
  * the given register
  */
-enum bme680_return_type bme680_read_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
+enum bme680_return_type bme680_read_reg(uint8_t addr_uint8_t, uint8_t *data_uint8_t, uint8_t len_uint8_t,
 	struct bme680_t *bme680);
 
 
@@ -551,23 +548,23 @@ enum bme680_return_type bme680_read_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
  * @brief This function is used to read the new data0
  * @note Field-0(new_data_0),Field-1(new_data_1) and Field-2(new_data_2)
 */
-enum bme680_return_type bme680_get_new_data(u8 *new_data_u8,
-	u8 field_u8, struct bme680_t *bme680);
+enum bme680_return_type bme680_get_new_data(uint8_t *new_data_uint8_t,
+	uint8_t field_uint8_t, struct bme680_t *bme680);
 
 /*!
  * @brief This function is used to read the uncompensated
  * sensor data from Field-0, Field-1, Field-2 and page-1
 */
 enum bme680_return_type bme680_get_uncomp_data(
-	struct bme680_uncomp_field_data *uncomp_data, u8 field_count,
-	u8 sensor_type, struct bme680_t *bme680);
+	struct bme680_uncomp_field_data *uncomp_data, uint8_t field_count,
+	uint8_t sensor_type, struct bme680_t *bme680);
 
 /*!
  * @brief This function is used to get the
  * Operational Mode from the sensor in the
  * register 0x74 bit 0 and 1
 */
-enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
+enum bme680_return_type bme680_get_power_mode(uint8_t *power_mode_uint8_t,
 	struct bme680_t *bme680);
 
 /*!
@@ -575,7 +572,7 @@ enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
  * Operational Mode of the sensor in the
  * register 0x74 bit 0 and 1
 */
-enum bme680_return_type bme680_set_power_mode(u8 power_mode_u8,
+enum bme680_return_type bme680_set_power_mode(uint8_t power_mode_uint8_t,
 	struct bme680_t *bme680);
 
 /*!
@@ -616,14 +613,14 @@ enum bme680_return_type bme680_get_gas_heater_config(
 */
 enum bme680_return_type bme680_compensate_data(
 	struct bme680_uncomp_field_data uncomp_data[],
-	struct bme680_comp_field_data comp_data[], u8 field_count,
-	u8 sensor_type, struct bme680_t *bme680);
+	struct bme680_comp_field_data comp_data[], uint8_t field_count,
+	uint8_t sensor_type, struct bme680_t *bme680);
 
 /*!
  * @brief This function is used to Align uncompensated data
  * from function bme680_get_uncomp_data()
 */
-void bme680_align_uncomp_data(u8 *a_data_u8, u8 field_count, u8 sensor_type,
+void bme680_align_uncomp_data(uint8_t *a_data_uint8_t, uint8_t field_count, uint8_t sensor_type,
 	struct bme680_uncomp_field_data *uncomp_data,
 	struct bme680_t *bme680);
 
@@ -632,7 +629,7 @@ void bme680_align_uncomp_data(u8 *a_data_u8, u8 field_count, u8 sensor_type,
 */
 enum bme680_return_type bme680_read_status_fields(
 	struct bme680_uncomp_field_data *uncomp_data,
-	u8 *a_data_u8, u8 *new_data,
+	uint8_t *a_data_uint8_t, uint8_t *new_data,
 	struct bme680_t *bme680);
 /* bme680_calculations.h */
 

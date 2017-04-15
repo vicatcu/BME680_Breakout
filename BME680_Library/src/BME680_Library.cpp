@@ -1,7 +1,7 @@
 
 #include "BME680_Library.h"
 #include <Wire.h>
-// #include <Arduino.h> // this breaks stuff right now
+#include <Arduino.h>
 
 void delay(unsigned long);
 
@@ -19,21 +19,21 @@ uint8_t BME680_Library::begin(void){
   return (com_rslt == BME680_COMM_RES_OK) ? 1 : 0;
 }
 
-s8 BME680_Library::i2c_write(u8 dev_addr, u8 reg_addr, u8 *reg_data_ptr, u8 data_len){
+int8_t BME680_Library::i2c_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len){
   // do stuff with Wire
 
 }
 
-s8 BME680_Library::i2c_read(u8 dev_addr, u8 reg_addr, u8 *reg_data_ptr, u8 data_len){
+int8_t BME680_Library::i2c_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len){
   // do stuff with Wire
 
 }
 
-s8 BME680_Library::i2c_burst_read(u8 slave_addr, u8 reg_addr, u8 *data_u8, u32 length_u32){
+int8_t BME680_Library::i2c_burst_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t *data_uint8_t, uint32_t length_uint32_t){
   // do stuff with Wire
 
 }
 
 void BME680_Library::delay_msec(BME680_MDELAY_DATA_TYPE ms){
-  // delay(ms); // issues with including Arduino.h right now preclude this
+  delay(ms);
 }

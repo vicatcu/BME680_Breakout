@@ -76,27 +76,27 @@
 /* Static function declarations */
 static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680);
 
-static void bme680_scale_to_multiplication_factor(u16 *duration_u16);
+static void bme680_scale_to_multiplication_factor(uint16_t *duration_uint16_t);
 
 #ifndef	__KERNEL__
-static void bme680_buffer_restruct_burst_write(u8 arr[], u8 reg_addr,
-	u8 data_size, u8 arr_size);
+static void bme680_buffer_restruct_burst_write(uint8_t arr[], uint8_t reg_addr,
+	uint8_t data_size, uint8_t arr_size);
 #endif
 
-static u8 bme680_find_largest_index(u8 *meas_index);
+static uint8_t bme680_find_largest_index(uint8_t *meas_index);
 
-static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
+static enum bme680_return_type bme680_set_memory_page(uint8_t memory_page_uint8_t,
 	struct bme680_t *bme680);
 
-static void bme680_align_sensor_type_uncomp_data(u8 *a_data_u8, u8 index,
-	u8 offset, u8 sensor_type,
+static void bme680_align_sensor_type_uncomp_data(uint8_t *a_data_uint8_t, uint8_t index,
+	uint8_t offset, uint8_t sensor_type,
 	struct bme680_uncomp_field_data *uncomp_data);
 
-static void bme680_packing_calib_param(u8 *a_data_u8, struct bme680_t *bme680);
+static void bme680_packing_calib_param(uint8_t *a_data_uint8_t, struct bme680_t *bme680);
 
 static void bme680_copy_ordered_sensor_field_data(
 	struct bme680_uncomp_field_data *sensor_data,
-	u8 latest, u8 recent, u8 old, u8 sensor_type,
+	uint8_t latest, uint8_t recent, uint8_t old, uint8_t sensor_type,
 	struct bme680_uncomp_field_data *temp_sensor_data);
 
 static void bme680_get_latest_recent_old_field_index(
@@ -105,19 +105,19 @@ static void bme680_get_latest_recent_old_field_index(
 
 #ifdef BME680_SPECIFIC_FIELD_DATA_READ_ENABLED
 static enum bme680_return_type bme680_get_field_specific_uncomp_data(
-	u8 field_index, u8 sensor_type, u8 *a_data_u8, struct bme680_t *bme680);
+	uint8_t field_index, uint8_t sensor_type, uint8_t *a_data_uint8_t, struct bme680_t *bme680);
 
 static enum bme680_return_type bme680_Temp_field_specific_uncomp_read(
-	u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680);
+	uint8_t field_index,	uint8_t *a_data_uint8_t, struct bme680_t *bme680);
 
 static enum bme680_return_type bme680_Pressure_field_specific_uncomp_read(
-	u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680);
+	uint8_t field_index,	uint8_t *a_data_uint8_t, struct bme680_t *bme680);
 
 static enum bme680_return_type bme680_Humidity_field_specific_uncomp_read(
-	u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680);
+	uint8_t field_index,	uint8_t *a_data_uint8_t, struct bme680_t *bme680);
 
 static enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
-	u8 field_index, u8 *a_data_u8, struct bme680_t *bme680);
+	uint8_t field_index, uint8_t *a_data_uint8_t, struct bme680_t *bme680);
 
 #endif
 
@@ -164,7 +164,7 @@ enum bme680_return_type bme680_init(struct bme680_t *bme680)
 {
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 data_u8 = BME680_INIT_VALUE;
+	uint8_t data_uint8_t = BME680_INIT_VALUE;
 	/* assign the pointer*/
 	if (BME680_SPI_INTERFACE == bme680->interface) {
 		/*SPI address 0x45*/
@@ -172,17 +172,17 @@ enum bme680_return_type bme680_init(struct bme680_t *bme680)
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_PAGE0_SPI_ID_REG,
-						&data_u8,
+						&data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 	} else if (BME680_I2C_INTERFACE == bme680->interface) {
 		/* read the chip id*/
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_PAGE0_I2C_ID_REG,
-						&data_u8,
+						&data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 	}
-	bme680->chip_id = data_u8;
+	bme680->chip_id = data_uint8_t;
 
 	if (BME680_COMM_RES_OK == com_status) {
 		if (BME680_CHIP_ID == bme680->chip_id) {
@@ -214,13 +214,13 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* array of data holding the calibration values*/
-	u8 v_data_u8 = BME680_INIT_VALUE;
-	u8 a_data_u8[BME680_CALIB_PARAM_SIZE];
-	u8 index = BME680_INIT_VALUE;
+	uint8_t v_data_uint8_t = BME680_INIT_VALUE;
+	uint8_t a_data_uint8_t[BME680_CALIB_PARAM_SIZE];
+	uint8_t index = BME680_INIT_VALUE;
 
 
 	for (; index < BME680_CALIB_PARAM_SIZE; index++)
-		a_data_u8[index] = BME680_INIT_VALUE;
+		a_data_uint8_t[index] = BME680_INIT_VALUE;
 
 	/* check the bme680 structure pointer as NULL*/
 	if (BME680_NULL_PTR == bme680) {
@@ -239,7 +239,7 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 				bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_CALIB_SPI_ADDR_1,
-						a_data_u8,
+						a_data_uint8_t,
 						BME680_CALIB_DATA_LENGTH_GAS);
 			/* read the humidity and gas
 			calibration data*/
@@ -247,7 +247,7 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 					bme680->bme680_bus_read(
 					bme680->dev_addr,
 					BME680_CALIB_SPI_ADDR_2,
-					(a_data_u8 +
+					(a_data_uint8_t +
 					BME680_CALIB_DATA_LENGTH_GAS),
 					BME680_CALIB_DATA_LENGTH);
 			}
@@ -258,7 +258,7 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_CALIB_I2C_ADDR_1,
-						a_data_u8,
+						a_data_uint8_t,
 						BME680_CALIB_DATA_LENGTH_GAS);
 				/* read the humidity and gas
 				calibration data*/
@@ -266,7 +266,7 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 					     bme680->bme680_bus_read(
 					     bme680->dev_addr,
 					     BME680_CALIB_I2C_ADDR_2,
-					    (a_data_u8 +
+					    (a_data_uint8_t +
 					    BME680_CALIB_DATA_LENGTH_GAS),
 					    BME680_CALIB_DATA_LENGTH);
 
@@ -276,7 +276,7 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 
 	if (BME680_COMM_RES_OK == com_status) {
 		/*read TPGH calibration*/
-		bme680_packing_calib_param(a_data_u8, bme680);
+		bme680_packing_calib_param(a_data_uint8_t, bme680);
 
 	if (BME680_SPI_INTERFACE == bme680->interface) {
 		/* memory page switch the SPI address*/
@@ -287,30 +287,30 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_RES_HEAT_RANGE,
-						&v_data_u8,
+						&v_data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 
-		bme680->cal_param.res_heat_range = BME680_GET_REG(v_data_u8,
+		bme680->cal_param.res_heat_range = BME680_GET_REG(v_data_uint8_t,
 						BME680_MASK_RES_HEAT_RANGE,
 						BME680_SHIFT_RES_HEAT_RANGE);
 
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_RES_HEAT_VAL,
-						&v_data_u8,
+						&v_data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 
-		bme680->cal_param.res_heat_val = v_data_u8;
+		bme680->cal_param.res_heat_val = v_data_uint8_t;
 
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_RANGE_SWITCHING_ERR,
-						&v_data_u8,
+						&v_data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 
 		bme680->cal_param.range_switching_error = BME680_GET_REG(
-						(s8)v_data_u8,
-						(s8)BME680_MASK_RANGE_ERR,
+						(int8_t)v_data_uint8_t,
+						(int8_t)BME680_MASK_RANGE_ERR,
 						BME680_SHIFT_RANGE_ERR);
 		}
 
@@ -323,9 +323,9 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
  *	the given register
  *
  *
- *	@param addr_u8 -> Address of the register
- *	@param data_u8 -> The data to write to the register
- *	@param len_u8 -> No of bytes to write
+ *	@param addr_uint8_t -> Address of the register
+ *	@param data_uint8_t -> The data to write to the register
+ *	@param len_uint8_t -> No of bytes to write
  *	@param bme680 structure pointer.
  *
  *
@@ -335,7 +335,7 @@ static enum bme680_return_type bme680_get_calib_param(struct bme680_t *bme680)
  *
  *
  */
-enum bme680_return_type bme680_write_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
+enum bme680_return_type bme680_write_reg(uint8_t addr_uint8_t, uint8_t *data_uint8_t, uint8_t len_uint8_t,
 	struct bme680_t *bme680)
 {
 	/* used to return the communication result*/
@@ -346,9 +346,9 @@ enum bme680_return_type bme680_write_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
 		} else {
 		com_status = (enum bme680_return_type)bme680->bme680_bus_write(
 							bme680->dev_addr,
-							addr_u8,
-							data_u8,
-							len_u8);
+							addr_uint8_t,
+							data_uint8_t,
+							len_uint8_t);
 	}
 	return com_status;
 }
@@ -357,10 +357,10 @@ enum bme680_return_type bme680_write_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
  *	the given register
  *
  *
- *	@param addr_u8 -> Address of the register
- *	@param data_u8 -> Pointer to store the
+ *	@param addr_uint8_t -> Address of the register
+ *	@param data_uint8_t -> Pointer to store the
  *  received data from the register
- *	@param len_u8 -> No of bytes to read
+ *	@param len_uint8_t -> No of bytes to read
  *	@param bme680 structure pointer.
  *
  *
@@ -370,7 +370,7 @@ enum bme680_return_type bme680_write_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
  *
  *
  */
-enum bme680_return_type bme680_read_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
+enum bme680_return_type bme680_read_reg(uint8_t addr_uint8_t, uint8_t *data_uint8_t, uint8_t len_uint8_t,
 	struct bme680_t *bme680)
 {
 	/* used to return the communication result*/
@@ -381,9 +381,9 @@ enum bme680_return_type bme680_read_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
 		} else {
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_read(bme680->dev_addr,
-								addr_u8,
-								data_u8,
-								len_u8);
+								addr_uint8_t,
+								data_uint8_t,
+								len_uint8_t);
 		}
 	return com_status;
 }
@@ -395,8 +395,8 @@ enum bme680_return_type bme680_read_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
  *	@note Page-1
  *
  *
- *	@param new_data_u8: The value of new data
- *	@param field_u8: The value of field selection for new data
+ *	@param new_data_uint8_t: The value of new data
+ *	@param field_uint8_t: The value of field selection for new data
  *   field    |  value
  * -----------|-------------
  *     0      | BME680_FIELD_ZERO
@@ -418,7 +418,7 @@ enum bme680_return_type bme680_read_reg(u8 addr_u8, u8 *data_u8, u8 len_u8,
  *
  *
 */
-enum bme680_return_type bme680_get_new_data(u8 *new_data_u8, u8 field_u8,
+enum bme680_return_type bme680_get_new_data(uint8_t *new_data_uint8_t, uint8_t field_uint8_t,
 	struct bme680_t *bme680)
 {
 
@@ -441,14 +441,14 @@ enum bme680_return_type bme680_get_new_data(u8 *new_data_u8, u8 field_u8,
 
 	if (BME680_COMM_RES_OK == com_status) {
 
-		switch (field_u8) {
+		switch (field_uint8_t) {
 		case BME680_FIELD_ZERO:
 			/* read field0 new data zero*/
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_0,
-						new_data_u8,
+						new_data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 
 		break;
@@ -459,7 +459,7 @@ enum bme680_return_type bme680_get_new_data(u8 *new_data_u8, u8 field_u8,
 						bme680->dev_addr,
 						(BME680_ADDR_FIELD_0 +
 						BME680_FIELD_ONE_OFFSET),
-						new_data_u8,
+						new_data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 
 		break;
@@ -471,7 +471,7 @@ enum bme680_return_type bme680_get_new_data(u8 *new_data_u8, u8 field_u8,
 						bme680->dev_addr,
 						(BME680_ADDR_FIELD_0 +
 						BME680_FIELD_TWO_OFFSET),
-						new_data_u8,
+						new_data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 
 		break;
@@ -480,7 +480,7 @@ enum bme680_return_type bme680_get_new_data(u8 *new_data_u8, u8 field_u8,
 		break;
 		}
 		if (BME680_COMM_RES_OK == com_status)
-			*new_data_u8 = BME680_GET_REG(*new_data_u8,
+			*new_data_uint8_t = BME680_GET_REG(*new_data_uint8_t,
 							BME680_MASK_NEW_DATA,
 							BME680_SHIFT_NEW_DATA);
 
@@ -525,20 +525,20 @@ enum bme680_return_type bme680_get_new_data(u8 *new_data_u8, u8 field_u8,
  *
 */
 enum bme680_return_type bme680_get_uncomp_data(
-	struct bme680_uncomp_field_data *uncomp_data, u8 field_count,
-	u8 sensor_type, struct bme680_t *bme680)
+	struct bme680_uncomp_field_data *uncomp_data, uint8_t field_count,
+	uint8_t sensor_type, struct bme680_t *bme680)
 {
 	/* used to return the communication result*/
 
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 index = BME680_INIT_VALUE;
-	u8 a_data_u8[BME680_LEN_ALL_FIELD_SIZE];
+	uint8_t index = BME680_INIT_VALUE;
+	uint8_t a_data_uint8_t[BME680_LEN_ALL_FIELD_SIZE];
 	struct bme680_uncomp_field_data temp_sensor_data[BME680_THREE];
 
 	#ifdef BME680_SPECIFIC_FIELD_DATA_READ_ENABLED
 
 	/*Array to store the new_data status of all 3 fields*/
-	u8 new_data[BME680_THREE] = {BME680_INIT_VALUE,	BME680_INIT_VALUE,
+	uint8_t new_data[BME680_THREE] = {BME680_INIT_VALUE,	BME680_INIT_VALUE,
 					BME680_INIT_VALUE};
 	#endif
 	/*clear the the latest, recent and old field index*/
@@ -564,7 +564,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 		com_status = (enum bme680_return_type)
 				bme680->bme680_bus_read(
 					bme680->dev_addr,
-					BME680_ADDR_FIELD_0, a_data_u8,
+					BME680_ADDR_FIELD_0, a_data_uint8_t,
 					BME680_SINGLE_FIELD_LENGTH);
 		field_count = BME680_PRESENT_DATA_FIELD;
 	} else {
@@ -572,7 +572,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 
 		/*read status field of all 3 filed and extract the new_data
 		flag status.*/
-		com_status = bme680_read_status_fields(uncomp_data, a_data_u8,
+		com_status = bme680_read_status_fields(uncomp_data, a_data_uint8_t,
 							new_data, bme680);
 
 		/*get the latest, recent and old field index*/
@@ -585,7 +585,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 				bme680_get_field_specific_uncomp_data(
 						bme680->latest_field_index,
 						sensor_type,
-						a_data_u8,
+						a_data_uint8_t,
 						bme680);
 
 		}
@@ -597,7 +597,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 				bme680_get_field_specific_uncomp_data(
 						bme680->recent_field_index,
 						sensor_type,
-						a_data_u8,
+						a_data_uint8_t,
 						bme680);
 			}
 
@@ -610,7 +610,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 				bme680_get_field_specific_uncomp_data(
 						bme680->recent_field_index,
 						sensor_type,
-						a_data_u8,
+						a_data_uint8_t,
 						bme680);
 			}
 
@@ -621,7 +621,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 				bme680_get_field_specific_uncomp_data(
 						bme680->old_field_index,
 						sensor_type,
-						a_data_u8,
+						a_data_uint8_t,
 						bme680);
 
 			}
@@ -632,12 +632,12 @@ enum bme680_return_type bme680_get_uncomp_data(
 			com_status = (enum bme680_return_type)
 					bme680->bme680_bus_read(
 					bme680->dev_addr,
-					BME680_ADDR_FIELD_0, a_data_u8,
+					BME680_ADDR_FIELD_0, a_data_uint8_t,
 					BME680_LEN_ALL_FIELD_SIZE);
 		}
-		(uncomp_data + 0)->status.meas_index =	a_data_u8[1];
-		(uncomp_data + 1)->status.meas_index =	a_data_u8[18];
-		(uncomp_data + 2)->status.meas_index =	a_data_u8[35];
+		(uncomp_data + 0)->status.meas_index =	a_data_uint8_t[1];
+		(uncomp_data + 1)->status.meas_index =	a_data_uint8_t[18];
+		(uncomp_data + 2)->status.meas_index =	a_data_uint8_t[35];
 
 		/*get the latest, recent and old field index*/
 		bme680_get_latest_recent_old_field_index(uncomp_data, bme680);
@@ -646,7 +646,7 @@ enum bme680_return_type bme680_get_uncomp_data(
 
 	if (BME680_COMM_RES_OK == com_status) {
 
-			bme680_align_uncomp_data(a_data_u8,
+			bme680_align_uncomp_data(a_data_uint8_t,
 						field_count,
 						sensor_type,
 						uncomp_data,
@@ -684,7 +684,7 @@ enum bme680_return_type bme680_get_uncomp_data(
  *	e.g; BME680_PRESSURE,BME680_TEMPERATURE,BME680_HUMIDITY
  *	BME680_GAS,BME680_ALL
  *
- *	@param a_data_u8 : pointer to store read data.
+ *	@param a_data_uint8_t : pointer to store read data.
  *	@param bme680 structure pointer.
  *
  *	@return results of bus communication function
@@ -694,7 +694,7 @@ enum bme680_return_type bme680_get_uncomp_data(
  *
 */
 enum bme680_return_type bme680_get_field_specific_uncomp_data(
-	u8 field_index, u8 sensor_type, u8 *a_data_u8, struct bme680_t *bme680)
+	uint8_t field_index, uint8_t sensor_type, uint8_t *a_data_uint8_t, struct bme680_t *bme680)
 {
 
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
@@ -706,21 +706,21 @@ enum bme680_return_type bme680_get_field_specific_uncomp_data(
 
 		com_status = bme680_Temp_field_specific_uncomp_read(
 								field_index,
-								a_data_u8,
+								a_data_uint8_t,
 								bme680);
 
 		switch (sensor_type) {
 		case BME680_PRESSURE:
 			com_status = bme680_Pressure_field_specific_uncomp_read(
 								field_index,
-								a_data_u8,
+								a_data_uint8_t,
 								bme680);
 
 		break;
 		case BME680_HUMIDITY:
 			com_status = bme680_Humidity_field_specific_uncomp_read(
 								field_index,
-								a_data_u8,
+								a_data_uint8_t,
 								bme680);
 
 		break;
@@ -728,7 +728,7 @@ enum bme680_return_type bme680_get_field_specific_uncomp_data(
 	} else if (BME680_GAS == sensor_type) {
 
 		com_status = bme680_Gas_field_specific_uncomp_read(field_index,
-								a_data_u8,
+								a_data_uint8_t,
 								bme680);
 
 	} else if (BME680_ALL == sensor_type) {
@@ -736,7 +736,7 @@ enum bme680_return_type bme680_get_field_specific_uncomp_data(
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_0,
-						a_data_u8,
+						a_data_uint8_t,
 						BME680_LEN_ALL_FIELD_SIZE);
 
 	}
@@ -752,7 +752,7 @@ enum bme680_return_type bme680_get_field_specific_uncomp_data(
  *	@param field_index : index of the field which needs
  *	to be read from the sensor
  *
- *	@param a_data_u8 : pointer to store read data.
+ *	@param a_data_uint8_t : pointer to store read data.
  *	@param bme680 structure pointer.
  *
  *	@return results of bus communication function
@@ -762,15 +762,15 @@ enum bme680_return_type bme680_get_field_specific_uncomp_data(
  *
 */
 enum bme680_return_type bme680_Temp_field_specific_uncomp_read(
-u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
+uint8_t field_index, uint8_t *a_data_uint8_t, struct bme680_t *bme680)
 {
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
-	u8 temp_data_u8[BME680_THREE];
-	u8 count = BME680_INIT_VALUE;
+	uint8_t temp_data_uint8_t[BME680_THREE];
+	uint8_t count = BME680_INIT_VALUE;
 
 	for (count = BME680_INIT_VALUE; count < BME680_THREE; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+		temp_data_uint8_t[count] = BME680_INIT_VALUE;
 
 		/*read uncompensated Temperature of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
@@ -779,25 +779,25 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_0_TEMP1,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_TEMPERATURE_DATA_LEN);
 		/*Assign data to the reserved index
 		5,6 & 7 of the input buffer*/
 		for (count = BME680_INIT_VALUE;
 		count < BME680_TEMPERATURE_DATA_LEN; count++)
-			a_data_u8[5 + count] = temp_data_u8[count];
+			a_data_uint8_t[5 + count] = temp_data_uint8_t[count];
 
 		/*read the 3 byte of T2 data form 0x27*/
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_0_TEMP2,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_TEMPERATURE_DATA_LEN);
 		/*Assign data to the reserved index
 		10,11 & 12 of the input buffer*/
 		for (count = BME680_INIT_VALUE;
 		count < BME680_TEMPERATURE_DATA_LEN; count++)
-			a_data_u8[10 + count] = temp_data_u8[count];
+			a_data_uint8_t[10 + count] = temp_data_uint8_t[count];
 
 			/*read uncompensated Temperature of field 1*/
 		}	else if (BME680_FIELD_INDEX1 == field_index) {
@@ -807,26 +807,26 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_1_TEMP1,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			22,23 & 24 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 			count < BME680_TEMPERATURE_DATA_LEN; count++)
-				a_data_u8[22 + count] = temp_data_u8[count];
+				a_data_uint8_t[22 + count] = temp_data_uint8_t[count];
 
 			/*read the 3 byte of T2 data form 0x38*/
 			com_status = (enum bme680_return_type)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_1_TEMP2,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			27,28 & 29 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count < BME680_TEMPERATURE_DATA_LEN; count++)
-				a_data_u8[27 + count] = temp_data_u8[count];
+				a_data_uint8_t[27 + count] = temp_data_uint8_t[count];
 
 		/*read uncompensated Temperature of field 2*/
 	} else if (BME680_FIELD_INDEX2 == field_index) {
@@ -836,26 +836,26 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_2_TEMP1,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			39,40 & 41 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count < BME680_TEMPERATURE_DATA_LEN; count++)
-				a_data_u8[39 + count] = temp_data_u8[count];
+				a_data_uint8_t[39 + count] = temp_data_uint8_t[count];
 
 			/*read the 3 byte of T2 data form 0x49*/
 			com_status = (enum bme680_return_type)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_2_TEMP2,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_TEMPERATURE_DATA_LEN);
 			/*Assign data to the reserved index
 			44,45 & 46 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count < BME680_TEMPERATURE_DATA_LEN; count++)
-				a_data_u8[44 + count] = temp_data_u8[count];
+				a_data_uint8_t[44 + count] = temp_data_uint8_t[count];
 
 	}
 	return com_status;
@@ -869,7 +869,7 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
  *	to be read from the sensor
  *
  *
- *	@param a_data_u8 : pointer to store read data.
+ *	@param a_data_uint8_t : pointer to store read data.
  *	@param bme680 structure pointer.
  *
  *	@return results of bus communication function
@@ -879,15 +879,15 @@ u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
  *
 */
 enum bme680_return_type bme680_Pressure_field_specific_uncomp_read(
-u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
+uint8_t field_index,	uint8_t *a_data_uint8_t, struct bme680_t *bme680)
 {
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
-	u8 temp_data_u8[BME680_THREE];
-	u8 count = BME680_INIT_VALUE;
+	uint8_t temp_data_uint8_t[BME680_THREE];
+	uint8_t count = BME680_INIT_VALUE;
 
 	for (count = BME680_INIT_VALUE; count < BME680_THREE; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+		temp_data_uint8_t[count] = BME680_INIT_VALUE;
 
 	/*read uncompensated Pressure of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
@@ -896,13 +896,13 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 				bme680->bme680_bus_read(
 				bme680->dev_addr,
 				BME680_ADDR_FIELD_0_PRESS,
-				temp_data_u8,
+				temp_data_uint8_t,
 				BME680_PRESSURE_DATA_LEN);
 		/*Assign data to the reserved index
 		2,3 & 4 of the input buffer*/
 		for (count = BME680_INIT_VALUE;
 			count < BME680_PRESSURE_DATA_LEN; count++)
-				a_data_u8[2 + count] = temp_data_u8[count];
+				a_data_uint8_t[2 + count] = temp_data_uint8_t[count];
 
 		/*read uncompensated Pressure of field 1*/
 	} else if (BME680_FIELD_INDEX1 == field_index) {
@@ -913,14 +913,14 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 					bme680->bme680_bus_read(
 					bme680->dev_addr,
 					BME680_ADDR_FIELD_1_PRESS,
-					temp_data_u8,
+					temp_data_uint8_t,
 					BME680_PRESSURE_DATA_LEN);
 			/*Assign data to the
 			reserved index
 			19,20 & 21 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count <	BME680_PRESSURE_DATA_LEN; count++)
-				a_data_u8[19 + count] =	temp_data_u8[count];
+				a_data_uint8_t[19 + count] =	temp_data_uint8_t[count];
 
 		/*read uncompensated Pressure of field 2*/
 	} else if (BME680_FIELD_INDEX2 == field_index) {
@@ -931,14 +931,14 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_2_PRESS,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_PRESSURE_DATA_LEN);
 			/*Assign data to the reserved
 			index 36,37 & 38 of the input
 			buffer*/
 			for (count = BME680_INIT_VALUE;
 			count <	BME680_PRESSURE_DATA_LEN; count++)
-				a_data_u8[36 + count] =	temp_data_u8[count];
+				a_data_uint8_t[36 + count] =	temp_data_uint8_t[count];
 
 	}
 	return com_status;
@@ -952,7 +952,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
  *	to be read from the sensor
  *
  *
- *	@param a_data_u8 : pointer to store read data.
+ *	@param a_data_uint8_t : pointer to store read data.
  *	@param bme680 structure pointer.
  *
  *	@return results of bus communication function
@@ -962,15 +962,15 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
  *
 */
 enum bme680_return_type bme680_Humidity_field_specific_uncomp_read(
-u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
+uint8_t field_index,	uint8_t *a_data_uint8_t, struct bme680_t *bme680)
 {
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
-	u8 temp_data_u8[BME680_TWO];
-	u8 count = BME680_INIT_VALUE;
+	uint8_t temp_data_uint8_t[BME680_TWO];
+	uint8_t count = BME680_INIT_VALUE;
 
 	for (count = BME680_INIT_VALUE; count < BME680_TWO; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+		temp_data_uint8_t[count] = BME680_INIT_VALUE;
 	/*read uncompensated Humidity of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
 		/*read the 2 byte of H data form 0x25*/
@@ -978,13 +978,13 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_0_HUM,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_HUMIDITY_DATA_LEN);
 		/*Assign data to the reserved index
 		8 & 9 of the input buffer*/
 		for (count = BME680_INIT_VALUE;
 			count < BME680_HUMIDITY_DATA_LEN; count++)
-				a_data_u8[8 + count] = temp_data_u8[count];
+				a_data_uint8_t[8 + count] = temp_data_uint8_t[count];
 
 		/*read uncompensated Humidity of field 1*/
 	} else if (BME680_FIELD_INDEX1 == field_index) {
@@ -994,13 +994,13 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_1_HUM,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_HUMIDITY_DATA_LEN);
 			/*Assign data to the reserved index
 			25 & 26 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count < BME680_HUMIDITY_DATA_LEN; count++)
-				a_data_u8[25 + count] = temp_data_u8[count];
+				a_data_uint8_t[25 + count] = temp_data_uint8_t[count];
 
 		/*read uncompensated Humidity of field 2*/
 	} else if (BME680_FIELD_INDEX2 == field_index) {
@@ -1010,13 +1010,13 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_2_HUM,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_HUMIDITY_DATA_LEN);
 			/*Assign data to the reserved index
 			42 & 43 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count < BME680_HUMIDITY_DATA_LEN; count++)
-				a_data_u8[42 + count] = temp_data_u8[count];
+				a_data_uint8_t[42 + count] = temp_data_uint8_t[count];
 
 	}
 	return com_status;
@@ -1030,7 +1030,7 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
  *	to be read from the sensor
  *
  *
- *	@param a_data_u8 : pointer to store read data.
+ *	@param a_data_uint8_t : pointer to store read data.
  *	@param bme680 structure pointer.
  *
  *	@return results of bus communication function
@@ -1040,15 +1040,15 @@ u8 field_index,	u8 *a_data_u8, struct bme680_t *bme680)
  *
 */
 enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
-	u8 field_index, u8 *a_data_u8, struct bme680_t *bme680)
+	uint8_t field_index, uint8_t *a_data_uint8_t, struct bme680_t *bme680)
 {
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* local buffer length is 5 and it's the maximum */
-	u8 temp_data_u8[BME680_TWO];
-	u8 count = BME680_INIT_VALUE;
+	uint8_t temp_data_uint8_t[BME680_TWO];
+	uint8_t count = BME680_INIT_VALUE;
 
 	for (count = BME680_INIT_VALUE; count < BME680_TWO; count++)
-		temp_data_u8[count] = BME680_INIT_VALUE;
+		temp_data_uint8_t[count] = BME680_INIT_VALUE;
 
 	/*read uncompensated Gas of field 0*/
 	if (BME680_FIELD_INDEX0 == field_index) {
@@ -1057,13 +1057,13 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 							bme680->dev_addr,
 							BME680_ADDR_FIELD_0_GAS,
-							temp_data_u8,
+							temp_data_uint8_t,
 							BME680_GAS_DATA_LEN);
 		/*Assign data to the reserved index
 			13,14 of the input buffer*/
 		for (count = BME680_INIT_VALUE;
 			count < BME680_GAS_DATA_LEN; count++)
-			a_data_u8[13 + count] = temp_data_u8[count];
+			a_data_uint8_t[13 + count] = temp_data_uint8_t[count];
 
 		/*read uncompensated Gas of field 1*/
 	} else if (BME680_FIELD_INDEX1 == field_index) {
@@ -1073,13 +1073,13 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_1_GAS,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_GAS_DATA_LEN);
 			/*Assign data to the reserved index
 			 30,31 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count < BME680_GAS_DATA_LEN; count++)
-				a_data_u8[30 + count] = temp_data_u8[count];
+				a_data_uint8_t[30 + count] = temp_data_uint8_t[count];
 
 			/*read uncompensated Gas of field 2*/
 	} else if (BME680_FIELD_INDEX2 == field_index) {
@@ -1089,13 +1089,13 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_FIELD_2_GAS,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_GAS_DATA_LEN);
 			/*Assign data to the reserved index
 			47,48 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 				count < BME680_GAS_DATA_LEN; count++)
-				a_data_u8[47 + count] =	temp_data_u8[count];
+				a_data_uint8_t[47 + count] =	temp_data_uint8_t[count];
 
 	}
 	return com_status;
@@ -1111,7 +1111,7 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
  *	Operational Mode from the sensor in the
  *	register 0x74 bit 0 and 1
  *
- *	@param power_mode_u8 : Pointer to store the received value
+ *	@param power_mode_uint8_t : Pointer to store the received value
  *	of power mode
  *  value     |    mode
  * -----------|------------------
@@ -1128,10 +1128,10 @@ enum bme680_return_type bme680_Gas_field_specific_uncomp_read(
  *
  *
 */
-enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
+enum bme680_return_type bme680_get_power_mode(uint8_t *power_mode_uint8_t,
 	struct bme680_t *bme680)
 {
-	u8 data_u8 = BME680_INIT_VALUE;
+	uint8_t data_uint8_t = BME680_INIT_VALUE;
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* check the bme680 is NULL pointer */
@@ -1142,16 +1142,16 @@ enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_read(bme680->dev_addr,
 						BME680_ADDR_OP_MODE,
-						&data_u8,
+						&data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 
 			if (BME680_COMM_RES_OK == com_status) {
-				*power_mode_u8 = BME680_GET_REG(data_u8,
+				*power_mode_uint8_t = BME680_GET_REG(data_uint8_t,
 							BME680_MASK_OP_MODE,
 							BME680_SHIFT_OP_MODE);
 				/* updating power mode in global structure*/
 				if (bme680->last_set_mode != BME680_FORCED_MODE)
-					bme680->last_set_mode =	*power_mode_u8;
+					bme680->last_set_mode =	*power_mode_uint8_t;
 
 		}
 	}
@@ -1162,7 +1162,7 @@ enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
  *	Operational Mode of the sensor in the
  *	register 0x74 bit 0 and 1
  *
- *	@param power_mode_u8 : The value of power mode
+ *	@param power_mode_uint8_t : The value of power mode
  *  value       |    mode
  * -------------|------------------
  *	0x00    |	BME680_SLEEP_MODE
@@ -1178,10 +1178,10 @@ enum bme680_return_type bme680_get_power_mode(u8 *power_mode_u8,
  *
  *
 */
-enum bme680_return_type bme680_set_power_mode(u8 power_mode_u8,
+enum bme680_return_type bme680_set_power_mode(uint8_t power_mode_uint8_t,
 	struct bme680_t *bme680)
 {
-	u8 data_u8 = BME680_INIT_VALUE;
+	uint8_t data_uint8_t = BME680_INIT_VALUE;
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* check the bme680 is NULL pointer */
@@ -1192,20 +1192,20 @@ enum bme680_return_type bme680_set_power_mode(u8 power_mode_u8,
 		com_status = (enum bme680_return_type)
 			bme680->bme680_bus_read(bme680->dev_addr,
 						BME680_ADDR_OP_MODE,
-						&data_u8,
+						&data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
 		if (BME680_COMM_RES_OK == com_status) {
-			data_u8 = BME680_SET_REG(data_u8, power_mode_u8,
+			data_uint8_t = BME680_SET_REG(data_uint8_t, power_mode_uint8_t,
 				BME680_MASK_OP_MODE, BME680_SHIFT_OP_MODE);
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_write(bme680->dev_addr,
 						BME680_ADDR_OP_MODE,
-						&data_u8,
+						&data_uint8_t,
 						BME680_GEN_WRITE_DATA_LENGTH);
 		}
 		/* updating power mode in global structure*/
 		if (BME680_COMM_RES_OK == com_status)
-			bme680->last_set_mode = power_mode_u8;
+			bme680->last_set_mode = power_mode_uint8_t;
 	}
 	return com_status;
 }
@@ -1242,8 +1242,8 @@ enum bme680_return_type bme680_set_sensor_config(
 {
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 data_u8[(BME680_SENS_CONF_LEN*2)-1];
-	u8 index;
+	uint8_t data_uint8_t[(BME680_SENS_CONF_LEN*2)-1];
+	uint8_t index;
 	/* check the bme680 is NULL pointer */
 	if (BME680_NULL_PTR == bme680) {
 		com_status = BME680_ERROR_NULL_PTR;
@@ -1260,37 +1260,37 @@ enum bme680_return_type bme680_set_sensor_config(
 
 		for (index = 0; index < (BME680_SENS_CONF_LEN * 2) - 2;
 			index++)
-			data_u8[index] = BME680_INIT_VALUE;
+			data_uint8_t[index] = BME680_INIT_VALUE;
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_SENSOR_CONFIG,
-						data_u8,
+						data_uint8_t,
 						(BME680_SENS_CONF_LEN));
 
 		if (BME680_COMM_RES_OK == com_status) {
-			data_u8[BME680_INDEX_CTRL_GAS_0] =
+			data_uint8_t[BME680_INDEX_CTRL_GAS_0] =
 				(sens_conf->heatr_ctrl & 0x01)
 				<< BME680_SHIFT_HEATR_CTRL;
 
-			data_u8[BME680_INDEX_CTRL_GAS_1] =
+			data_uint8_t[BME680_INDEX_CTRL_GAS_1] =
 				((sens_conf->odr & 0x08) << BME680_SHIFT_ODR_3)
 				| ((sens_conf->run_gas & 0x01) <<
 				BME680_SHIFT_RUN_GAS) |
 				(sens_conf->nb_conv & 0x0F);
 
-			data_u8[BME680_INDEX_CTRL_HUM] =
+			data_uint8_t[BME680_INDEX_CTRL_HUM] =
 				((sens_conf->intr & 0x01) <<
 				BME680_SHIFT_SPI_3W_INT) |
 				(sens_conf->osrs_hum & 0x07);
 
-			data_u8[BME680_INDEX_CTRL_MEAS] =
+			data_uint8_t[BME680_INDEX_CTRL_MEAS] =
 				((sens_conf->osrs_pres & 0x07) <<
 				BME680_SHIFT_OSRS_PRES) |
 				((sens_conf->osrs_temp & 0x07) <<
 				BME680_SHIFT_OSRS_TEMP) |
-				(data_u8[BME680_INDEX_CTRL_MEAS] & 0x03);
+				(data_uint8_t[BME680_INDEX_CTRL_MEAS] & 0x03);
 
-			data_u8[BME680_INDEX_CONFIG] =
+			data_uint8_t[BME680_INDEX_CONFIG] =
 				(((sens_conf->odr) & 0x07) <<
 				BME680_SHIFT_ODR_2_0) |
 				((sens_conf->filter & 0x07) <<
@@ -1298,7 +1298,7 @@ enum bme680_return_type bme680_set_sensor_config(
 				(sens_conf->spi_3w & 0x01);
 
 #ifndef	__KERNEL__
-			bme680_buffer_restruct_burst_write(data_u8,
+			bme680_buffer_restruct_burst_write(data_uint8_t,
 						0x70,
 						BME680_SENS_CONF_LEN,
 						(BME680_SENS_CONF_LEN * 2)-1);
@@ -1306,13 +1306,13 @@ enum bme680_return_type bme680_set_sensor_config(
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_write(bme680->dev_addr,
 						BME680_ADDR_SENSOR_CONFIG,
-						data_u8,
+						data_uint8_t,
 						(BME680_SENS_CONF_LEN * 2)-1);
 #else
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_write(bme680->dev_addr,
 						BME680_ADDR_SENSOR_CONFIG,
-						data_u8,
+						data_uint8_t,
 						BME680_SENS_CONF_LEN);
 #endif
 		}
@@ -1357,8 +1357,8 @@ enum bme680_return_type bme680_get_sensor_config(
 {
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 data_u8[BME680_SENS_CONF_LEN];
-	u8 index;
+	uint8_t data_uint8_t[BME680_SENS_CONF_LEN];
+	uint8_t index;
 	/* check the bme680 is NULL pointer */
 	if (BME680_NULL_PTR == bme680) {
 		com_status = BME680_ERROR_NULL_PTR;
@@ -1376,57 +1376,57 @@ enum bme680_return_type bme680_get_sensor_config(
 	if (BME680_COMM_RES_OK == com_status) {
 
 		for (index = 0; index < BME680_SENS_CONF_LEN ; index++)
-			data_u8[index] = BME680_INIT_VALUE;
+			data_uint8_t[index] = BME680_INIT_VALUE;
 
 		com_status = (enum bme680_return_type)
 						bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_SENSOR_CONFIG,
-						data_u8,
+						data_uint8_t,
 						BME680_SENS_CONF_LEN);
 		if (BME680_COMM_RES_OK == com_status) {
 			sens_conf->heatr_ctrl = (enum bme680_heatr_ctrl)
-				BME680_GET_REG(data_u8[BME680_INDEX_CTRL_GAS_0],
+				BME680_GET_REG(data_uint8_t[BME680_INDEX_CTRL_GAS_0],
 						BME680_MASK_HEATR_CTRL,
 						BME680_SHIFT_HEATR_CTRL);
 			sens_conf->run_gas = (enum bme680_run_gas)
-				BME680_GET_REG(data_u8[BME680_INDEX_CTRL_GAS_1],
+				BME680_GET_REG(data_uint8_t[BME680_INDEX_CTRL_GAS_1],
 							BME680_MASK_RUN_GAS,
 							BME680_SHIFT_RUN_GAS);
 			sens_conf->nb_conv = BME680_GET_REG(
-					data_u8[BME680_INDEX_CTRL_GAS_1],
+					data_uint8_t[BME680_INDEX_CTRL_GAS_1],
 					BME680_MASK_PROF_INDEX,
 					BME680_SHIFT_PROF_INDEX);
 			sens_conf->odr = (enum bme680_odr)((BME680_GET_REG(
-					data_u8[BME680_INDEX_CTRL_GAS_1],
+					data_uint8_t[BME680_INDEX_CTRL_GAS_1],
 					BME680_MASK_ODR_3,
 					BME680_SHIFT_ODR_3)) | (BME680_GET_REG(
-					data_u8[BME680_INDEX_CONFIG],
+					data_uint8_t[BME680_INDEX_CONFIG],
 					BME680_MASK_ODR_2_0,
 					BME680_SHIFT_ODR_2_0)));
 			sens_conf->osrs_hum = (enum bme680_osrs_x)
-				BME680_GET_REG(data_u8[BME680_INDEX_CTRL_HUM],
+				BME680_GET_REG(data_uint8_t[BME680_INDEX_CTRL_HUM],
 						BME680_MASK_OSRS_HUM,
 						BME680_SHIFT_OSRS_HUM);
 			sens_conf->intr = (enum bme680_spi_3w_intr)
-				BME680_GET_REG(data_u8[BME680_INDEX_CTRL_HUM],
+				BME680_GET_REG(data_uint8_t[BME680_INDEX_CTRL_HUM],
 						BME680_MASK_SPI_3W_INT,
 						BME680_SHIFT_SPI_3W_INT);
 			sens_conf->osrs_pres = (enum bme680_osrs_x)
-				BME680_GET_REG(data_u8[BME680_INDEX_CTRL_MEAS],
+				BME680_GET_REG(data_uint8_t[BME680_INDEX_CTRL_MEAS],
 							BME680_MASK_OSRS_PRES,
 							BME680_SHIFT_OSRS_PRES);
 
 			sens_conf->osrs_temp = (enum bme680_osrs_x)
-				BME680_GET_REG(data_u8[BME680_INDEX_CTRL_MEAS],
+				BME680_GET_REG(data_uint8_t[BME680_INDEX_CTRL_MEAS],
 							BME680_MASK_OSRS_TEMP,
 							BME680_SHIFT_OSRS_TEMP);
 			sens_conf->filter = (enum bme680_filter)BME680_GET_REG(
-						data_u8[BME680_INDEX_CONFIG],
+						data_uint8_t[BME680_INDEX_CONFIG],
 						BME680_MASK_FILTER,
 						BME680_SHIFT_FILTER);
 			sens_conf->spi_3w = (enum bme680_spi_3w)BME680_GET_REG(
-						data_u8[BME680_INDEX_CONFIG],
+						data_uint8_t[BME680_INDEX_CONFIG],
 						BME680_MASK_SPI_3W_EN,
 						BME680_SHIFT_SPI_3W_EN);
 			}
@@ -1469,9 +1469,9 @@ enum bme680_return_type bme680_set_gas_heater_config(
 
 		/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 data_u8[(BME680_SENS_HEATR_CONF_LEN << 1)-1] = {0};
-	u8 index;
-	u8 power_mode = 0;
+	uint8_t data_uint8_t[(BME680_SENS_HEATR_CONF_LEN << 1)-1] = {0};
+	uint8_t index;
+	uint8_t power_mode = 0;
 	/* check the bme680 is NULL pointer */
 	if (BME680_NULL_PTR == bme680) {
 		com_status = BME680_ERROR_NULL_PTR;
@@ -1489,14 +1489,14 @@ enum bme680_return_type bme680_set_gas_heater_config(
 		com_status = bme680_get_power_mode(&power_mode, bme680);
 		for (index = 0; index < heatr_conf->profile_cnt;
 		index++) {
-			data_u8[index] = heatr_conf->heatr_idacv[index];
+			data_uint8_t[index] = heatr_conf->heatr_idacv[index];
 		#ifdef FIXED_POINT_COMPENSATION
-			data_u8[index + 10] =
+			data_uint8_t[index + 10] =
 				bme680_convert_temperature_to_resistance_int32(
 					heatr_conf->heater_temp[index],
 					25, bme680);
 		#else
-			data_u8[index + 10] =
+			data_uint8_t[index + 10] =
 				bme680_convert_temperature_to_resistance_double(
 					heatr_conf->heater_temp[index],
 					25, bme680);
@@ -1504,7 +1504,7 @@ enum bme680_return_type bme680_set_gas_heater_config(
 			if (power_mode != BME680_PARALLEL_MODE)
 				bme680_scale_to_multiplication_factor(
 					&heatr_conf->heatr_dur[index]);
-			data_u8[index + 20] = heatr_conf->heatr_dur[index];
+			data_uint8_t[index + 20] = heatr_conf->heatr_dur[index];
 
 		}
 		if (BME680_PARALLEL_MODE == power_mode) {
@@ -1513,11 +1513,11 @@ enum bme680_return_type bme680_set_gas_heater_config(
 				BME680_GAS_WAIT_STEP_SIZE;
 			bme680_scale_to_multiplication_factor(
 				&heatr_conf->heatr_dur_shared);
-			data_u8[30] = heatr_conf->heatr_dur_shared;
+			data_uint8_t[30] = heatr_conf->heatr_dur_shared;
 
 		}
 #ifndef	__KERNEL__
-		bme680_buffer_restruct_burst_write(data_u8,
+		bme680_buffer_restruct_burst_write(data_uint8_t,
 					BME680_ADDR_SENS_CONF_START,
 					BME680_SENS_HEATR_CONF_LEN,
 					(BME680_SENS_HEATR_CONF_LEN << 1)-1);
@@ -1525,13 +1525,13 @@ enum bme680_return_type bme680_set_gas_heater_config(
 		com_status = (enum bme680_return_type)bme680->bme680_bus_write(
 					bme680->dev_addr,
 					BME680_ADDR_SENS_CONF_START,
-					data_u8,
+					data_uint8_t,
 					(BME680_SENS_HEATR_CONF_LEN << 1)-1);
 #else
 		com_status = (enum bme680_return_type)bme680->bme680_bus_write(
 					bme680->dev_addr,
 					BME680_ADDR_SENS_CONF_START,
-					data_u8,
+					data_uint8_t,
 					BME680_SENS_HEATR_CONF_LEN);
 #endif
 		}
@@ -1554,22 +1554,22 @@ enum bme680_return_type bme680_set_gas_heater_config(
  *		10			 |	16
  *		11			 |	64
  *
- *	@param duration_u16 : pointer to store the
+ *	@param duration_uint16_t : pointer to store the
  *	the converted gas duration
  *
  *	@return none
 */
 
-static void bme680_scale_to_multiplication_factor(u16 *duration_u16)
+static void bme680_scale_to_multiplication_factor(uint16_t *duration_uint16_t)
 {
 
-	u8 factor = 0;
+	uint8_t factor = 0;
 
-	while ((*duration_u16) > BME680_GAS_WAIT_MAX_TIMER_VALUE) {
-		(*duration_u16) = (*duration_u16) >> 2;
+	while ((*duration_uint16_t) > BME680_GAS_WAIT_MAX_TIMER_VALUE) {
+		(*duration_uint16_t) = (*duration_uint16_t) >> 2;
 		factor += 1;
 	}
-	(*duration_u16) = (*duration_u16) + (factor * 64);
+	(*duration_uint16_t) = (*duration_uint16_t) + (factor * 64);
 
 }
 
@@ -1586,10 +1586,10 @@ static void bme680_scale_to_multiplication_factor(u16 *duration_u16)
  *
 */
 #ifndef	__KERNEL__
-static void bme680_buffer_restruct_burst_write(u8 arr[], u8 reg_addr,
-	u8 data_size, u8 arr_size)
+static void bme680_buffer_restruct_burst_write(uint8_t arr[], uint8_t reg_addr,
+	uint8_t data_size, uint8_t arr_size)
 {
-	s8 index, sub_index  = 0;
+	int8_t index, sub_index  = 0;
 
 	 for (index = 0 ; index < (data_size - 1); index++) {
 		arr[arr_size - 1 - sub_index] = arr[data_size - index - 1];
@@ -1635,8 +1635,8 @@ enum bme680_return_type bme680_get_gas_heater_config(
 {
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 data_u8[BME680_SENS_HEATR_CONF_LEN];
-	u8 index;
+	uint8_t data_uint8_t[BME680_SENS_HEATR_CONF_LEN];
+	uint8_t index;
 	/* check the bme680 is NULL pointer */
 	if (BME680_NULL_PTR == bme680) {
 		com_status = BME680_ERROR_NULL_PTR;
@@ -1651,12 +1651,12 @@ enum bme680_return_type bme680_get_gas_heater_config(
 	if (BME680_COMM_RES_OK == com_status) {
 
 		for (index = 0; index < BME680_SENS_HEATR_CONF_LEN; index++)
-				data_u8[index] = BME680_INIT_VALUE;
+				data_uint8_t[index] = BME680_INIT_VALUE;
 
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_read(bme680->dev_addr,
 						0x50,
-						data_u8,
+						data_uint8_t,
 						BME680_SENS_HEATR_CONF_LEN);
 		if (BME680_COMM_RES_OK == com_status) {
 			/* 0<= pc <=10 has been modified in order to
@@ -1669,17 +1669,17 @@ enum bme680_return_type bme680_get_gas_heater_config(
 				for (index = 0; index <	BME680_PROFILE_MAX;
 					index++) {
 					heatr_conf->heatr_idacv[index] =
-						data_u8[index];
+						data_uint8_t[index];
 					heatr_conf->heater_temp[index] =
-						data_u8[index + 10];
+						data_uint8_t[index + 10];
 					heatr_conf->heatr_dur[index] =
-						data_u8[index + 20];
+						data_uint8_t[index + 20];
 				}
 			} else {
 					com_status = BME680_PROFILE_CNT_ERROR;
 			}
 
-			heatr_conf->heatr_dur_shared = data_u8[30];
+			heatr_conf->heatr_dur_shared = data_uint8_t[30];
 		}
 	}
 	}
@@ -1736,13 +1736,13 @@ enum bme680_return_type bme680_get_gas_heater_config(
 enum bme680_return_type bme680_compensate_data(
 	struct bme680_uncomp_field_data *uncomp_data,
 	struct bme680_comp_field_data *comp_data,
-	u8 field_count, u8 sensor_type, struct bme680_t *bme680)
+	uint8_t field_count, uint8_t sensor_type, struct bme680_t *bme680)
 {
 
 		/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
-	u8 index;
-	u8 max_count = 3;
+	uint8_t index;
+	uint8_t max_count = 3;
 
 	if ((field_count < 1 || field_count > 3)
 		|| (BME680_SLEEP_MODE == bme680->last_set_mode)) {
@@ -1888,7 +1888,7 @@ for (index = 0; ((index < field_count) &&
  *	from the register 0x73 bit 4
  *
  *
- *	@param memory_page_u8:
+ *	@param memory_page_uint8_t:
  *	The value of memory page
  *	value  | Description
  * --------|--------------
@@ -1904,10 +1904,10 @@ for (index = 0; ((index < field_count) &&
  *
  *
 */
-static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
+static enum bme680_return_type bme680_set_memory_page(uint8_t memory_page_uint8_t,
 	struct bme680_t *bme680)
 {
-	u8 data_u8 = BME680_INIT_VALUE;
+	uint8_t data_uint8_t = BME680_INIT_VALUE;
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 	/* check the bme680 is NULL pointer */
@@ -1918,9 +1918,9 @@ static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
 		com_status = (enum bme680_return_type)bme680->bme680_bus_read(
 						bme680->dev_addr,
 						BME680_ADDR_SPI_MEM_PAGE,
-						&data_u8,
+						&data_uint8_t,
 						BME680_GEN_READ_DATA_LENGTH);
-		data_u8 = BME680_SET_REG(data_u8, memory_page_u8,
+		data_uint8_t = BME680_SET_REG(data_uint8_t, memory_page_uint8_t,
 						BME680_MASK_MEM_PAGE,
 						BME680_SHIFT_SPI_MEM_PAGE);
 		if (BME680_COMM_RES_OK == com_status)
@@ -1928,7 +1928,7 @@ static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
 				bme680->bme680_bus_write(
 						bme680->dev_addr,
 						BME680_ADDR_SPI_MEM_PAGE,
-						&data_u8,
+						&data_uint8_t,
 						BME680_GEN_WRITE_DATA_LENGTH);
 	}
 	return com_status;
@@ -1938,7 +1938,7 @@ static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
  *	@brief This function is used to Align uncompensated data
  *	from function bme680_get_uncomp_data()
  *
- *	@param a_data_u8 : pointer to buffer
+ *	@param a_data_uint8_t : pointer to buffer
  *	@param field_count : total no of field data which needs
  *	to be compensated
  *	@param sensor_type : Type of sensor
@@ -1960,11 +1960,11 @@ static enum bme680_return_type bme680_set_memory_page(u8 memory_page_u8,
  *
  *
 */
-void bme680_align_uncomp_data(u8 *a_data_u8, u8 field_count, u8 sensor_type,
+void bme680_align_uncomp_data(uint8_t *a_data_uint8_t, uint8_t field_count, uint8_t sensor_type,
 	struct bme680_uncomp_field_data *uncomp_data,	struct bme680_t *bme680)
 {
-	u8 offset = BME680_INIT_VALUE;
-	s8 index = BME680_INIT_VALUE;
+	uint8_t offset = BME680_INIT_VALUE;
+	int8_t index = BME680_INIT_VALUE;
 
 	if (BME680_FORCED_MODE != bme680->last_set_mode)
 		field_count = BME680_ALL_DATA_FIELD;
@@ -1975,39 +1975,39 @@ void bme680_align_uncomp_data(u8 *a_data_u8, u8 field_count, u8 sensor_type,
 
 		/*  field_index status */
 		(uncomp_data + index)->status.new_data = BME680_GET_REG(
-				a_data_u8[FIELD_0_MEAS_STATUS_0 + offset],
+				a_data_uint8_t[FIELD_0_MEAS_STATUS_0 + offset],
 				BME680_MASK_NEW_DATA,
 				BME680_SHIFT_NEW_DATA);
 		(uncomp_data + index)->status.gas_meas_stat = BME680_GET_REG(
-				a_data_u8[FIELD_0_MEAS_STATUS_0 + offset],
+				a_data_uint8_t[FIELD_0_MEAS_STATUS_0 + offset],
 				BME680_MASK_GAS_MEAS_STAT,
 				BME680_SHIFT_GAS_MEAS_STAT);
 		(uncomp_data + index)->status.tphg_meas_stat = BME680_GET_REG(
-				a_data_u8[FIELD_0_MEAS_STATUS_0 + offset],
+				a_data_uint8_t[FIELD_0_MEAS_STATUS_0 + offset],
 				BME680_MASK_TPHG_MEAS_STAT,
 				BME680_SHIFT_TPHG_MEAS_STAT);
 		(uncomp_data + index)->status.gas_meas_index = BME680_GET_REG(
-				a_data_u8[FIELD_0_MEAS_STATUS_0 + offset],
+				a_data_uint8_t[FIELD_0_MEAS_STATUS_0 + offset],
 				BME680_MASK_GAS_MEAS_INDEX,
 				BME680_SHIFT_GAS_MEAS_INDEX);
 		(uncomp_data + index)->status.meas_index =
-				a_data_u8[FIELD_0_MEAS_STATUS_1 + offset];
+				a_data_uint8_t[FIELD_0_MEAS_STATUS_1 + offset];
 		(uncomp_data + index)->gas_range = BME680_GET_REG(
-					a_data_u8[FIELD_0_GAS_RL_LSB + offset],
+					a_data_uint8_t[FIELD_0_GAS_RL_LSB + offset],
 					BME680_MASK_GAS_RANGE,
 					BME680_SHIFT_GAS_RANGE);
 		(uncomp_data + index)->status.gas_valid = BME680_GET_REG(
-					a_data_u8[FIELD_0_GAS_RL_LSB + offset],
+					a_data_uint8_t[FIELD_0_GAS_RL_LSB + offset],
 					BME680_MASK_GAS_VALID,
 					BME680_SHIFT_GAS_VALID);
 		(uncomp_data + index)->status.heatr_stab = BME680_GET_REG(
-					a_data_u8[FIELD_0_GAS_RL_LSB + offset],
+					a_data_uint8_t[FIELD_0_GAS_RL_LSB + offset],
 					BME680_MASK_HEATR_STAB,
 					BME680_SHIFT_HEATR_STAB);
 
 		/* uncompensated field zero
 		pressure data*/
-		bme680_align_sensor_type_uncomp_data(a_data_u8, index, offset,
+		bme680_align_sensor_type_uncomp_data(a_data_uint8_t, index, offset,
 								sensor_type,
 								uncomp_data);
 
@@ -2036,13 +2036,13 @@ void bme680_get_latest_recent_old_field_index(
 {
 	/* Array holding the filed0, field1 and field2
 	temperature, pressure, humidity and gas data*/
-	u8 latest = BME680_INIT_VALUE;
-	u8 recent = BME680_INIT_VALUE;
-	u8 old = BME680_INIT_VALUE;
-	u8 index = BME680_INIT_VALUE;
-	u8 large_index = BME680_INIT_VALUE;
-	u8 max_index = 2;
-	u8 meas_index[3];
+	uint8_t latest = BME680_INIT_VALUE;
+	uint8_t recent = BME680_INIT_VALUE;
+	uint8_t old = BME680_INIT_VALUE;
+	uint8_t index = BME680_INIT_VALUE;
+	uint8_t large_index = BME680_INIT_VALUE;
+	uint8_t max_index = 2;
+	uint8_t meas_index[3];
 
 	for (index = BME680_INIT_VALUE; index < 3; index++)
 		meas_index[index] = BME680_INIT_VALUE;
@@ -2096,7 +2096,7 @@ void bme680_get_latest_recent_old_field_index(
  *	@brief This function is used to read the status of all 3 fields
  *
  *	@param uncomp_data : Pointer to array of uncompensated data structure.
- *	@param a_data_u8: pointer to store the read status data.
+ *	@param a_data_uint8_t: pointer to store the read status data.
  *	@param new_data: pointer to store the new_data value of given field
  *	@param bme680 structure pointer.
  *
@@ -2108,33 +2108,33 @@ void bme680_get_latest_recent_old_field_index(
 */
 enum bme680_return_type bme680_read_status_fields(
 	struct bme680_uncomp_field_data *uncomp_data,
-	u8 *a_data_u8, u8 *new_data,
+	uint8_t *a_data_uint8_t, uint8_t *new_data,
 	struct bme680_t *bme680)
 {
 	/* used to return the communication result*/
 	enum bme680_return_type com_status = BME680_COMM_RES_ERROR;
 
-	u8 count = BME680_INIT_VALUE;
+	uint8_t count = BME680_INIT_VALUE;
 	/* local buffer length is 5 and it's the maximum */
-	u8 temp_data_u8[2] = {BME680_INIT_VALUE, BME680_INIT_VALUE};
+	uint8_t temp_data_uint8_t[2] = {BME680_INIT_VALUE, BME680_INIT_VALUE};
 
 
 		/*read the 2 byte of status form 0x1D - field_0*/
 		com_status = (enum bme680_return_type)
 			bme680->bme680_bus_read(bme680->dev_addr,
 				BME680_ADDR_FIELD_0_STATUS,
-				temp_data_u8,
+				temp_data_uint8_t,
 				BME680_STATUS_DATA_LEN);
 		/* Assign data to the reserved
 			index of the input buffer */
 		for (count = BME680_INIT_VALUE;
 			count < BME680_STATUS_DATA_LEN; count++)
-			a_data_u8[0 + count] = temp_data_u8[count];
+			a_data_uint8_t[0 + count] = temp_data_uint8_t[count];
 
-			(uncomp_data + 0)->status.meas_index =	a_data_u8[1];
+			(uncomp_data + 0)->status.meas_index =	a_data_uint8_t[1];
 
 		if (BME680_COMM_RES_OK == com_status)
-			new_data[0] = BME680_GET_REG(a_data_u8[0],
+			new_data[0] = BME680_GET_REG(a_data_uint8_t[0],
 							BME680_MASK_NEW_DATA,
 							BME680_SHIFT_NEW_DATA);
 
@@ -2143,18 +2143,18 @@ enum bme680_return_type bme680_read_status_fields(
 		com_status = (enum bme680_return_type)
 			bme680->bme680_bus_read(bme680->dev_addr,
 			BME680_ADDR_FIELD_1_STATUS,
-			temp_data_u8,
+			temp_data_uint8_t,
 			BME680_STATUS_DATA_LEN);
 			/*Assign data to the reserved index
 			17 and 18 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 			count < BME680_STATUS_DATA_LEN; count++)
-				a_data_u8[17 + count] = temp_data_u8[count];
+				a_data_uint8_t[17 + count] = temp_data_uint8_t[count];
 
-			(uncomp_data + 1)->status.meas_index =	a_data_u8[18];
+			(uncomp_data + 1)->status.meas_index =	a_data_uint8_t[18];
 
 		if (BME680_COMM_RES_OK == com_status)
-				new_data[1] = BME680_GET_REG(a_data_u8[17],
+				new_data[1] = BME680_GET_REG(a_data_uint8_t[17],
 							BME680_MASK_NEW_DATA,
 							BME680_SHIFT_NEW_DATA);
 
@@ -2162,17 +2162,17 @@ enum bme680_return_type bme680_read_status_fields(
 			com_status = (enum bme680_return_type)
 				bme680->bme680_bus_read(bme680->dev_addr,
 						BME680_ADDR_FIELD_2_STATUS,
-						temp_data_u8,
+						temp_data_uint8_t,
 						BME680_STATUS_DATA_LEN);
 			/*Assign data to the reserved index
 			34 and 35 of the input buffer*/
 			for (count = BME680_INIT_VALUE;
 			count < BME680_STATUS_DATA_LEN; count++)
-				a_data_u8[34 + count] = temp_data_u8[count];
+				a_data_uint8_t[34 + count] = temp_data_uint8_t[count];
 
-			(uncomp_data + 2)->status.meas_index =	a_data_u8[35];
+			(uncomp_data + 2)->status.meas_index =	a_data_uint8_t[35];
 			if (BME680_COMM_RES_OK == com_status)
-				new_data[2] = BME680_GET_REG(a_data_u8[34],
+				new_data[2] = BME680_GET_REG(a_data_uint8_t[34],
 							BME680_MASK_NEW_DATA,
 							BME680_SHIFT_NEW_DATA);
 			return com_status;
@@ -2199,11 +2199,11 @@ enum bme680_return_type bme680_read_status_fields(
 */
 void bme680_copy_ordered_sensor_field_data(
 	struct bme680_uncomp_field_data *sensor_data,
-	u8 latest, u8 recent, u8 old, u8 sensor_type,
+	uint8_t latest, uint8_t recent, uint8_t old, uint8_t sensor_type,
 	struct bme680_uncomp_field_data *temp_sensor_data)
 {
 
-	u8 index = BME680_INIT_VALUE;
+	uint8_t index = BME680_INIT_VALUE;
 #ifndef BME680_SPECIFIC_FIELD_DATA_READ_ENABLED
 	 sensor_type = BME680_ALL;
 #endif
@@ -2333,11 +2333,11 @@ void bme680_copy_ordered_sensor_field_data(
  *
  *
 */
-static u8 bme680_find_largest_index(u8 *meas_index)
+static uint8_t bme680_find_largest_index(uint8_t *meas_index)
 {
 
-	u8 index = BME680_INIT_VALUE;
-	u8 temp_index = BME680_INIT_VALUE;
+	uint8_t index = BME680_INIT_VALUE;
+	uint8_t temp_index = BME680_INIT_VALUE;
 
 	if (*(meas_index + index) > *(meas_index + (index + 2))) {
 		if (*(meas_index + index) > *(meas_index + (index + 1)))
@@ -2355,7 +2355,7 @@ static u8 bme680_find_largest_index(u8 *meas_index)
  *	for the specified sensor type and called from the
  *	function bme680_align_uncomp_data()
  *
- *	@param a_data_u8 : pointer to buffer
+ *	@param a_data_uint8_t : pointer to buffer
  *	@param index : index value
  *	@param offset : offset value
  *	@param uncomp_data : Pointer to array of structure which
@@ -2380,8 +2380,8 @@ static u8 bme680_find_largest_index(u8 *meas_index)
  *
 */
 
-static void bme680_align_sensor_type_uncomp_data(u8 *a_data_u8, u8 index,
-	u8 offset, u8 sensor_type,
+static void bme680_align_sensor_type_uncomp_data(uint8_t *a_data_uint8_t, uint8_t index,
+	uint8_t offset, uint8_t sensor_type,
 	struct bme680_uncomp_field_data *uncomp_data)
 {
 
@@ -2389,47 +2389,47 @@ static void bme680_align_sensor_type_uncomp_data(u8 *a_data_u8, u8 index,
 	case BME680_PRESSURE:
 		/* uncompensated field zero
 		temperature data*/
-		(uncomp_data + index)->temp_adcv = (u32)(((((u32)a_data_u8[
+		(uncomp_data + index)->temp_adcv = (uint32_t)(((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_MSB_DATA + offset]))
-			<< 12) | ((((u32)a_data_u8[
+			<< 12) | ((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_LSB_DATA + offset]))
-			<< 4) | ((u32)a_data_u8[
+			<< 4) | ((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_XLSB_DATA + offset]
 			>> 4));
 		/* uncompensated field zero
 		pressure data*/
-		(uncomp_data + index)->pres_adcv = (u32)(((((u32)a_data_u8[
+		(uncomp_data + index)->pres_adcv = (uint32_t)(((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_PRESSURE_MSB_DATA + offset])) << 12) |
-			((((u32)a_data_u8[BME680_DATA_FRAME_PRESSURE_LSB_DATA
-			+ offset])) << 4) | ((u32)a_data_u8[
+			((((uint32_t)a_data_uint8_t[BME680_DATA_FRAME_PRESSURE_LSB_DATA
+			+ offset])) << 4) | ((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_PRESSURE_XLSB_DATA + offset] >> 4));
 	break;
 	case BME680_TEMPERATURE:
 		/* uncompensated field zero
 		temperature data*/
-		(uncomp_data + index)->temp_adcv = (u32)(((((u32)a_data_u8[
+		(uncomp_data + index)->temp_adcv = (uint32_t)(((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_MSB_DATA	+ offset]))
-			<< 12) | ((((u32)a_data_u8[
+			<< 12) | ((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_LSB_DATA + offset]))
-			<< 4) | ((u32)a_data_u8[
+			<< 4) | ((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_XLSB_DATA + offset]
 			>> 4));
 	break;
 	case BME680_HUMIDITY:
 		/* uncompensated field zero
 		temperature data*/
-		(uncomp_data + index)->temp_adcv = (u32)(((((u32)a_data_u8[
+		(uncomp_data + index)->temp_adcv = (uint32_t)(((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_MSB_DATA	+ offset]))
-			<< 12) | ((((u32)a_data_u8[
+			<< 12) | ((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_LSB_DATA + offset]))
-			<< 4) | ((u32)a_data_u8[
+			<< 4) | ((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_XLSB_DATA + offset]
 			>> 4));
 		/* uncompensated field zero
 		humidity data*/
-		(uncomp_data + index)->hum_adcv = (u16)(((((u16)a_data_u8[
+		(uncomp_data + index)->hum_adcv = (uint16_t)(((((uint16_t)a_data_uint8_t[
 			BME680_DATA_FRAME_HUMIDITY_MSB_DATA + offset])) << 8)|
-			((a_data_u8[BME680_DATA_FRAME_HUMIDITY_LSB_DATA +
+			((a_data_uint8_t[BME680_DATA_FRAME_HUMIDITY_LSB_DATA +
 			offset])));
 	break;
 	case BME680_GAS:
@@ -2438,9 +2438,9 @@ static void bme680_align_sensor_type_uncomp_data(u8 *a_data_u8, u8 index,
 		/* uncompensated field zero Gas data*/
 		if (BME680_TRUE == (uncomp_data + index)->status.gas_valid) {
 			(uncomp_data + index)->gas_res_adcv =
-				(u16)(((((u16)a_data_u8[
+				(uint16_t)(((((uint16_t)a_data_uint8_t[
 				BME680_DATA_FRAME_GAS_MSB_DATA + offset])) << 2)
-				| ((((u16)a_data_u8[
+				| ((((uint16_t)a_data_uint8_t[
 				BME680_DATA_FRAME_GAS_LSB_DATA + offset])
 				& BME680_GAS_BIT_MASK) >> 6));
 		}
@@ -2448,35 +2448,35 @@ static void bme680_align_sensor_type_uncomp_data(u8 *a_data_u8, u8 index,
 	case BME680_ALL:
 		/* uncompensated field zero
 		pressure data*/
-		(uncomp_data + index)->pres_adcv = (u32)
-			(((((u32)a_data_u8[BME680_DATA_FRAME_PRESSURE_MSB_DATA +
-			offset])) << 12) | ((((u32)a_data_u8[
+		(uncomp_data + index)->pres_adcv = (uint32_t)
+			(((((uint32_t)a_data_uint8_t[BME680_DATA_FRAME_PRESSURE_MSB_DATA +
+			offset])) << 12) | ((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_PRESSURE_LSB_DATA + offset])) << 4) |
-			((u32)a_data_u8[BME680_DATA_FRAME_PRESSURE_XLSB_DATA +
+			((uint32_t)a_data_uint8_t[BME680_DATA_FRAME_PRESSURE_XLSB_DATA +
 			offset] >> 4));
 		/* uncompensated field zero
 		temperature data*/
-		(uncomp_data + index)->temp_adcv = (u32)(((((u32)a_data_u8[
+		(uncomp_data + index)->temp_adcv = (uint32_t)(((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_MSB_DATA + offset]))
-			<< 12) | ((((u32)a_data_u8[
+			<< 12) | ((((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_LSB_DATA + offset]))
-			<< 4) | ((u32)a_data_u8[
+			<< 4) | ((uint32_t)a_data_uint8_t[
 			BME680_DATA_FRAME_TEMPERATURE1_XLSB_DATA + offset]
 			>> 4));
 		/* uncompensated field zero
 		humidity data*/
-		(uncomp_data + index)->hum_adcv = (u16)(((((u16)a_data_u8[
+		(uncomp_data + index)->hum_adcv = (uint16_t)(((((uint16_t)a_data_uint8_t[
 			BME680_DATA_FRAME_HUMIDITY_MSB_DATA + offset])) << 8)|
-			((a_data_u8[BME680_DATA_FRAME_HUMIDITY_LSB_DATA +
+			((a_data_uint8_t[BME680_DATA_FRAME_HUMIDITY_LSB_DATA +
 			offset])));
 		/* Gas values are updated
 		only if gas valid is set */
 		/* uncompensated field zero Gas data*/
 		if (BME680_TRUE == (uncomp_data + index)->status.gas_valid) {
 			(uncomp_data + index)->gas_res_adcv =
-				(u16)(((((u16)a_data_u8[
+				(uint16_t)(((((uint16_t)a_data_uint8_t[
 				BME680_DATA_FRAME_GAS_MSB_DATA
-				+ offset])) << 2) | ((((u16)a_data_u8[
+				+ offset])) << 2) | ((((uint16_t)a_data_uint8_t[
 				BME680_DATA_FRAME_GAS_LSB_DATA + offset]) &
 				BME680_GAS_BIT_MASK) >> 6));
 		}
@@ -2486,50 +2486,49 @@ static void bme680_align_sensor_type_uncomp_data(u8 *a_data_u8, u8 index,
 }
 
 
-static void bme680_packing_calib_param(u8 *a_data_u8, struct bme680_t *bme680)
+static void bme680_packing_calib_param(uint8_t *a_data_uint8_t, struct bme680_t *bme680)
 {
 
 	/* read temperature calibration*/
-	bme680->cal_param.par_T1 = (u16)((((u16)(a_data_u8[DIG_T1_MSB_REG]))
-		<< 8) | a_data_u8[DIG_T1_LSB_REG]);
-	bme680->cal_param.par_T2 = (s16)(((((u16)a_data_u8[DIG_T2_MSB_REG]))
-		<< 8) | a_data_u8[DIG_T2_LSB_REG]);
-	bme680->cal_param.par_T3 = (s8)(a_data_u8[DIG_T3_REG]);
+	bme680->cal_param.par_T1 = (uint16_t)((((uint16_t)(a_data_uint8_t[DIG_T1_MSB_REG]))
+		<< 8) | a_data_uint8_t[DIG_T1_LSB_REG]);
+	bme680->cal_param.par_T2 = (int16_t)(((((uint16_t)a_data_uint8_t[DIG_T2_MSB_REG]))
+		<< 8) | a_data_uint8_t[DIG_T2_LSB_REG]);
+	bme680->cal_param.par_T3 = (int8_t)(a_data_uint8_t[DIG_T3_REG]);
 
 	/* read pressure calibration*/
-	bme680->cal_param.par_P1 = (u16)((((u16)(a_data_u8[DIG_P1_MSB_REG])) <<
-		8) | a_data_u8[DIG_P1_LSB_REG]);
-	bme680->cal_param.par_P2 = (s16)(((((u16)a_data_u8[DIG_P2_MSB_REG]))
-		<< 8) | a_data_u8[DIG_P2_LSB_REG]);
-	bme680->cal_param.par_P3 = (s8)a_data_u8[DIG_P3_REG];
-	bme680->cal_param.par_P4 = (s16)(((((u16)a_data_u8[DIG_P4_MSB_REG]))
-		<< 8) | a_data_u8[DIG_P4_LSB_REG]);
-	bme680->cal_param.par_P5 = (s16)(((((u16)a_data_u8[DIG_P5_MSB_REG]))
-		<< 8) | a_data_u8[DIG_P5_LSB_REG]);
-	bme680->cal_param.par_P6 = (s8)(a_data_u8[DIG_P6_REG]);
-	bme680->cal_param.par_P7 = (s8)(a_data_u8[DIG_P7_REG]);
-	bme680->cal_param.par_P8 = (s16)(((((u16)a_data_u8[DIG_P8_MSB_REG]))
-		<< 8) | a_data_u8[DIG_P8_LSB_REG]);
-	bme680->cal_param.par_P9 = (s16)(((((u16)a_data_u8[DIG_P9_MSB_REG]))
-		<< 8) | a_data_u8[DIG_P9_LSB_REG]);
-	bme680->cal_param.par_P10 = (u8)(a_data_u8[DIG_P10_REG]);
+	bme680->cal_param.par_P1 = (uint16_t)((((uint16_t)(a_data_uint8_t[DIG_P1_MSB_REG])) <<
+		8) | a_data_uint8_t[DIG_P1_LSB_REG]);
+	bme680->cal_param.par_P2 = (int16_t)(((((uint16_t)a_data_uint8_t[DIG_P2_MSB_REG]))
+		<< 8) | a_data_uint8_t[DIG_P2_LSB_REG]);
+	bme680->cal_param.par_P3 = (int8_t)a_data_uint8_t[DIG_P3_REG];
+	bme680->cal_param.par_P4 = (int16_t)(((((uint16_t)a_data_uint8_t[DIG_P4_MSB_REG]))
+		<< 8) | a_data_uint8_t[DIG_P4_LSB_REG]);
+	bme680->cal_param.par_P5 = (int16_t)(((((uint16_t)a_data_uint8_t[DIG_P5_MSB_REG]))
+		<< 8) | a_data_uint8_t[DIG_P5_LSB_REG]);
+	bme680->cal_param.par_P6 = (int8_t)(a_data_uint8_t[DIG_P6_REG]);
+	bme680->cal_param.par_P7 = (int8_t)(a_data_uint8_t[DIG_P7_REG]);
+	bme680->cal_param.par_P8 = (int16_t)(((((uint16_t)a_data_uint8_t[DIG_P8_MSB_REG]))
+		<< 8) | a_data_uint8_t[DIG_P8_LSB_REG]);
+	bme680->cal_param.par_P9 = (int16_t)(((((uint16_t)a_data_uint8_t[DIG_P9_MSB_REG]))
+		<< 8) | a_data_uint8_t[DIG_P9_LSB_REG]);
+	bme680->cal_param.par_P10 = (uint8_t)(a_data_uint8_t[DIG_P10_REG]);
 
 	/* read humidity calibration*/
-	bme680->cal_param.par_H1 = (u16)(((((u16)a_data_u8[DIG_H1_MSB_REG]))
-		<< 4) | (a_data_u8[DIG_H1_LSB_REG] & BME680_BIT_MASK_H1_DATA));
-	bme680->cal_param.par_H2 = (u16)(((((u16)a_data_u8[DIG_H2_MSB_REG]))
-		<< 4) | ((a_data_u8[DIG_H2_LSB_REG]) >> 4));
-	bme680->cal_param.par_H3 = (s8)a_data_u8[DIG_H3_REG];
-	bme680->cal_param.par_H4 = (s8) a_data_u8[DIG_H4_REG];
-	bme680->cal_param.par_H5 = (s8) a_data_u8[DIG_H5_REG];
-	bme680->cal_param.par_H6 = (u8)a_data_u8[DIG_H6_REG];
-	bme680->cal_param.par_H7 = (s8)a_data_u8[DIG_H7_REG];
+	bme680->cal_param.par_H1 = (uint16_t)(((((uint16_t)a_data_uint8_t[DIG_H1_MSB_REG]))
+		<< 4) | (a_data_uint8_t[DIG_H1_LSB_REG] & BME680_BIT_MASK_H1_DATA));
+	bme680->cal_param.par_H2 = (uint16_t)(((((uint16_t)a_data_uint8_t[DIG_H2_MSB_REG]))
+		<< 4) | ((a_data_uint8_t[DIG_H2_LSB_REG]) >> 4));
+	bme680->cal_param.par_H3 = (int8_t)a_data_uint8_t[DIG_H3_REG];
+	bme680->cal_param.par_H4 = (int8_t) a_data_uint8_t[DIG_H4_REG];
+	bme680->cal_param.par_H5 = (int8_t) a_data_uint8_t[DIG_H5_REG];
+	bme680->cal_param.par_H6 = (uint8_t)a_data_uint8_t[DIG_H6_REG];
+	bme680->cal_param.par_H7 = (int8_t)a_data_uint8_t[DIG_H7_REG];
 
 	/* read gas calibration*/
-	bme680->cal_param.par_GH1 = (s8)a_data_u8[DIG_GH1_REG];
-	bme680->cal_param.par_GH2 = (s16)(((((u16)a_data_u8[DIG_GH2_MSB_REG]))
-		<<8) | a_data_u8[DIG_GH2_LSB_REG]);
-	bme680->cal_param.par_GH3 = (s8)a_data_u8[DIG_GH3_REG];
+	bme680->cal_param.par_GH1 = (int8_t)a_data_uint8_t[DIG_GH1_REG];
+	bme680->cal_param.par_GH2 = (int16_t)(((((uint16_t)a_data_uint8_t[DIG_GH2_MSB_REG]))
+		<<8) | a_data_uint8_t[DIG_GH2_LSB_REG]);
+	bme680->cal_param.par_GH3 = (int8_t)a_data_uint8_t[DIG_GH3_REG];
 
 }
-
