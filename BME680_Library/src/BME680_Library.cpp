@@ -3,70 +3,132 @@
 #include <Wire.h>
 
 BME680_Library::BME680_Library(uint8_t i2c_addr){
-  bme680_sensor_no[0].bme680_bus_write = BME680_Library::i2c_write;
-  bme680_sensor_no[0].bme680_bus_read = BME680_Library::i2c_read;
-  bme680_sensor_no[0].bme680_burst_read = BME680_Library::i2c_burst_read;
-  bme680_sensor_no[0].delay_msec = BME680_Library::delay_msec;
-
-  i2c_address = i2c_addr;
-  bme680_sensor_no[0].dev_addr = i2c_addr;
-
-  bme680_sensor_no[0].interface = BME680_I2C_INTERFACE;
-  bme680_sensor_no[0].chip_id = 0xFF;
+  gas_sensor.dev_id = i2c_addr;
+	gas_sensor.intf = BME680_I2C_INTF;
+	gas_sensor.read = BME680_Library::i2c_read;
+	gas_sensor.write = BME680_Library::i2c_write;
+	gas_sensor.delay_ms = BME680_Library::delay_msec;
 }
 
 boolean BME680_Library::begin(void){
-  enum bme680_return_type com_rslt = bme680_init(&bme680_sensor_no[0]);
-  return (com_rslt == BME680_COMM_RES_OK);
+  int8_t rslt = BME680_OK;
+	rslt = bme680_init(&gas_sensor);
+  return BME680_OK == rslt;
+}
+
+boolean BME680_Library::configureForcedMode(void){
+  int8_t rslt = -1;
+  uint8_t set_required_settings;
+
+	/* Set the temperature, pressure and humidity settings */
+	gas_sensor.tph_sett.os_hum = BME680_OS_2X;
+	gas_sensor.tph_sett.os_pres = BME680_OS_4X;
+	gas_sensor.tph_sett.os_temp = BME680_OS_8X;
+	gas_sensor.tph_sett.filter = BME680_FILTER_SIZE_3;
+
+	/* Set the remaining gas sensor settings and link the heating profile */
+	gas_sensor.gas_sett.run_gas = BME680_ENABLE_GAS_MEAS;
+	/* Create a ramp heat waveform in 3 steps */
+	gas_sensor.gas_sett.heatr_temp = 320; /* degree Celsius */
+	gas_sensor.gas_sett.heatr_dur = 150; /* milliseconds */
+
+	/* Select the power mode */
+	/* Must be set before writing the sensor configuration */
+	gas_sensor.power_mode = BME680_FORCED_MODE;
+
+	/* Set the required sensor settings needed */
+	set_required_settings = BME680_OST_SEL | BME680_OSP_SEL | BME680_OSH_SEL | BME680_FILTER_SEL
+		| BME680_GAS_SENSOR_SEL;
+
+	/* Set the desired sensor configuration */
+	rslt = bme680_set_sensor_settings(set_required_settings,&gas_sensor);
+
+	/* Set the power mode */
+	rslt = bme680_set_sensor_mode(&gas_sensor);
+
+	/* Get the total measurement duration so as to sleep or wait till the
+	 * measurement is complete */
+	uint16_t meas_period;
+	bme680_get_profile_dur(&meas_period, &gas_sensor);
+	BME680_Library::delay_msec(meas_period); /* Delay till the measurement is ready */
+
+  return (rslt == 0);
 }
 
 uint8_t BME680_Library::getDeviceID(void){
-  return bme680_sensor_no[0].chip_id;
+  return gas_sensor.chip_id;
 }
 
-int8_t BME680_Library::i2c_write(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len){
-  // writes data_len bytes from buffer reg_data_ptr into I2C @ dev_addr starting at reg_addr
-  // addresses are _not_ auto-incremented
-  enum bme680_return_type ret = BME680_COMM_RES_ERROR;     // assume an error will happen
+int8_t BME680_Library::i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len){
+  int8_t ret = -1; /* Return 0 for Success, non-zero for failure */
+
+/*
+ * The parameter dev_id can be used as a variable to store the I2C address of the device
+ */
+
+/*
+ * Data on the bus should be like
+ * |------------+---------------------|
+ * | I2C action | Data                |
+ * |------------+---------------------|
+ * | Start      | -                   |
+ * | Write      | (reg_addr)          |
+ * | Write      | (reg_data[0])       |
+ * | Write      | (....)              |
+ * | Write      | (reg_data[len - 1]) |
+ * | Stop       | -                   |
+ * |------------+---------------------|
+ */
+
   uint8_t num_written = 0;
 
-  Wire.beginTransmission(dev_addr); // starts queueing bytes to be written
+  Wire.beginTransmission(dev_id); // starts queueing bytes to be written
 
-  while(num_written < data_len){    // queue a (addr / value) pair of bytes per data value
+  while(num_written < len){    // queue a (addr / value) pair of bytes per data value
     Wire.write(reg_addr);           // write the register address
-    Wire.write(*reg_data_ptr);      // write the register value
+    Wire.write(*reg_data);      // write the register value
     reg_addr++;                     // advance the register address
-    reg_data_ptr++;                 // advance the write value pointer
+    reg_data++;                 // advance the write value pointer
     num_written++;                  // increment the number of bytes written
   }
 
   if(0 == Wire.endTransmission()){  // actually sends the queued bytes
     // if endTransmission returns a non-zero result
     // it's some kind of error, otherwise it's good
-    ret = BME680_COMM_RES_OK;
+    ret = 0;
   }
 
   return ret;
 }
 
-int8_t BME680_Library::i2c_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint8_t data_len){
-  // reads I2C @ dev_addr, asks for register address reg_addr
-  // expects to read data_len bytes back and stores them in reg_data_ptr array
-  // supports up to 255 bytes because data_len is 8-bit
-  return i2c_burst_read(dev_addr, reg_addr, reg_data_ptr, (uint32_t) data_len);
-}
 
-int8_t BME680_Library::i2c_burst_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data_ptr, uint32_t data_len){
-  // reads I2C @ dev_addr, asks for register address reg_addr
-  // expects to read data_len bytes back and stores them in reg_data_ptr array
-  // apparently in case you want more than 255 bytes because data_len is 32-bit here
+int8_t BME680_Library::i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len){
+  int8_t ret = -1; /* Return 0 for Success, non-zero for failure */
 
-  enum bme680_return_type ret = BME680_COMM_RES_ERROR;     // assume an error will happen
+  /*
+   * The parameter dev_id can be used as a variable to store the I2C address of the device
+   */
 
-  Wire.beginTransmission(dev_addr);                        // START+SLA+W
+  /*
+   * Data on the bus should be like
+   * |------------+---------------------|
+   * | I2C action | Data                |
+   * |------------+---------------------|
+   * | Start      | -                   |
+   * | Write      | (reg_addr)          |
+   * | Stop       | -                   |
+   * | Start      | -                   |
+   * | Read       | (reg_data[0])       |
+   * | Read       | (....)              |
+   * | Read       | (reg_data[len - 1]) |
+   * | Stop       | -                   |
+   * |------------+---------------------|
+   */
+
+  Wire.beginTransmission(dev_id);                          // START+SLA+W
   Wire.write(reg_addr);                                    // REG
-  Wire.endTransmission(false);                             // REP START
-  Wire.requestFrom(dev_addr, data_len,  1U);               // SLA+R
+  Wire.endTransmission();                                  // STOP (false would be REP START)
+  Wire.requestFrom(dev_id, len,  1U);                      // SLA+R and STOP
 
   // using the blink without delay pattern here
   const int32_t timeout = 1000;                            // wait for up to 1s
@@ -79,13 +141,13 @@ int8_t BME680_Library::i2c_burst_read(uint8_t dev_addr, uint8_t reg_addr, uint8_
     currentMillis = millis();
 
     if(Wire.available()){
-      *reg_data_ptr = Wire.read();                         // DATA
-      reg_data_ptr++; // advance write pointer
+      *reg_data = Wire.read();                         // DATA
+      reg_data++; // advance write pointer
       num_read++;     // increment read counter
     }
 
-    if(num_read == data_len){                              // read complete
-      ret = BME680_COMM_RES_OK;                            // good outcome
+    if(num_read == len){                              // read complete
+      ret = 0;                            // good outcome
       complete = true;
     }
     else if (currentMillis - previousMillis >= timeout) {  // timeout
@@ -96,6 +158,32 @@ int8_t BME680_Library::i2c_burst_read(uint8_t dev_addr, uint8_t reg_addr, uint8_
   return ret;
 }
 
-void BME680_Library::delay_msec(BME680_MDELAY_DATA_TYPE ms){
+void BME680_Library::delay_msec(uint32_t ms){
   delay(ms);
+}
+
+boolean BME680_Library::read(){
+  int rslt = bme680_get_sensor_data(&data, &gas_sensor);
+  return (rslt == 0);
+}
+
+float BME680_Library::getTemperature(){
+  return data.temperature / 100.0f;
+}
+
+float BME680_Library::getRelativeHumidity(){
+  return data.humidity / 1000.0f;
+}
+
+float BME680_Library::getBarometricPressure(){
+  return data.pressure / 100.0f;
+}
+
+uint32_t BME680_Library::getGasResistance(){
+  if(data.status & BME680_HEAT_STAB_MSK){
+    return data.gas_resistance;
+  }
+  else{
+    return 0;
+  }
 }
