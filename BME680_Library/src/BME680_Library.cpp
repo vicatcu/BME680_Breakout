@@ -127,7 +127,7 @@ int8_t BME680_Library::i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_d
 
   Wire.beginTransmission(dev_id);                          // START+SLA+W
   Wire.write(reg_addr);                                    // REG
-  Wire.endTransmission();                                  // STOP (false would be REP START)
+  Wire.endTransmission(false);                             // STOP (false would be REP START)
   Wire.requestFrom(dev_id, len,  1U);                      // SLA+R and STOP
 
   // using the blink without delay pattern here
@@ -163,7 +163,12 @@ void BME680_Library::delay_msec(uint32_t ms){
 }
 
 boolean BME680_Library::read(){
+
   int rslt = bme680_get_sensor_data(&data, &gas_sensor);
+  // if(rslt != 0){
+  //   Serial.print("RSLT = ");
+  //   Serial.println(rslt, HEX);
+  // }
   return (rslt == 0);
 }
 

@@ -4,7 +4,7 @@
 BME680_Library bme680;
 
 void setup(void){
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Wire.begin();
 
@@ -16,6 +16,7 @@ void setup(void){
     Serial.print("Failed!");
     for(;;); // spin forever
   }
+  Serial.println();
 
   Serial.print("Configuring Forced Mode...");
   if(bme680.configureForcedMode()){
@@ -25,11 +26,13 @@ void setup(void){
     Serial.print("Failed!");
     for(;;); // spin forever
   }
+  Serial.println();
 
   Serial.println(F("Temperature(degC),Relative_Humidity(%),Pressure(hPa),Gas_Resistance(Ohms)"));
 }
 
 void loop(void){
+  bme680.configureForcedMode(); // otherwise you get BME680_W_NO_NEW_DATA warning code?
   if(bme680.read()){
     Serial.print(bme680.getTemperature(), 2);
     Serial.print(F(","));
@@ -43,6 +46,6 @@ void loop(void){
   else{
     Serial.println("BME680 Read Failed!");
   }
-  
+
   delay(2000);
 }
