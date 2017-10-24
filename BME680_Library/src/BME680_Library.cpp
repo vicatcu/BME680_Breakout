@@ -60,102 +60,99 @@ uint8_t BME680_Library::getDeviceID(void){
 }
 
 int8_t BME680_Library::i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len){
-  int8_t ret = -1; /* Return 0 for Success, non-zero for failure */
+	int8_t ret = -1; /* Return 0 for Success, non-zero for failure */
 
-/*
- * The parameter dev_id can be used as a variable to store the I2C address of the device
- */
+	/*
+	* The parameter dev_id can be used as a variable to store the I2C address of the device
+	*/
 
-/*
- * Data on the bus should be like
- * |------------+---------------------|
- * | I2C action | Data                |
- * |------------+---------------------|
- * | Start      | -                   |
- * | Write      | (reg_addr)          |
- * | Write      | (reg_data[0])       |
- * | Write      | (....)              |
- * | Write      | (reg_data[len - 1]) |
- * | Stop       | -                   |
- * |------------+---------------------|
- */
+	/*
+	* Data on the bus should be like
+	* |------------+---------------------|
+	* | I2C action | Data                |
+	* |------------+---------------------|
+	* | Start      | -                   |
+	* | Write      | (reg_addr)          |
+	* | Write      | (reg_data[0])       |
+	* | Write      | (....)              |
+	* | Write      | (reg_data[len - 1]) |
+	* | Stop       | -                   |
+	* |------------+---------------------|
+	*/
 
-  uint8_t num_written = 0;
+	uint8_t num_written = 0;
 
-  Wire.beginTransmission(dev_id); // starts queueing bytes to be written
+	// Interleaving of register address and data is done by the API
+	Wire.beginTransmission(dev_id); // starts queueing bytes to be written
+	Wire.write(reg_addr);           // write the register address 
+	while (num_written < len){  // Queue the rest of the bytes
+		Wire.write(reg_data[num_written]);      // write the register value
+		num_written++;                  // increment the number of bytes written
+	}
 
-  while(num_written < len){    // queue a (addr / value) pair of bytes per data value
-    Wire.write(reg_addr);           // write the register address
-    Wire.write(*reg_data);      // write the register value
-    reg_addr++;                     // advance the register address
-    reg_data++;                 // advance the write value pointer
-    num_written++;                  // increment the number of bytes written
-  }
+	if (0 == Wire.endTransmission()){  // actually sends the queued bytes
+		// if endTransmission returns a non-zero result
+		// it's some kind of error, otherwise it's good
+		ret = 0;
+	}
 
-  if(0 == Wire.endTransmission()){  // actually sends the queued bytes
-    // if endTransmission returns a non-zero result
-    // it's some kind of error, otherwise it's good
-    ret = 0;
-  }
-
-  return ret;
+	return ret;
 }
 
 
 int8_t BME680_Library::i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_data, uint16_t len){
-  int8_t ret = -1; /* Return 0 for Success, non-zero for failure */
+	int8_t ret = -1; /* Return 0 for Success, non-zero for failure */
 
-  /*
-   * The parameter dev_id can be used as a variable to store the I2C address of the device
-   */
+	/*
+	* The parameter dev_id can be used as a variable to store the I2C address of the device
+	*/
 
-  /*
-   * Data on the bus should be like
-   * |------------+---------------------|
-   * | I2C action | Data                |
-   * |------------+---------------------|
-   * | Start      | -                   |
-   * | Write      | (reg_addr)          |
-   * | Stop       | -                   |
-   * | Start      | -                   |
-   * | Read       | (reg_data[0])       |
-   * | Read       | (....)              |
-   * | Read       | (reg_data[len - 1]) |
-   * | Stop       | -                   |
-   * |------------+---------------------|
-   */
+	/*
+	* Data on the bus should be like
+	* |------------+---------------------|
+	* | I2C action | Data                |
+	* |------------+---------------------|
+	* | Start      | -                   |
+	* | Write      | (reg_addr)          |
+	* | Stop       | -                   |
+	* | Start      | -                   |
+	* | Read       | (reg_data[0])       |
+	* | Read       | (....)              |
+	* | Read       | (reg_data[len - 1]) |
+	* | Stop       | -                   |
+	* |------------+---------------------|
+	*/
 
-  Wire.beginTransmission(dev_id);                          // START+SLA+W
-  Wire.write(reg_addr);                                    // REG
-  Wire.endTransmission(false);                             // STOP (false would be REP START)
-  Wire.requestFrom(dev_id, len,  1U);                      // SLA+R and STOP
+	Wire.beginTransmission(dev_id);                          // START+SLA+W
+	Wire.write(reg_addr);                                    // REG
+	Wire.endTransmission(false);                             // STOP (false would be REP START)
+	Wire.requestFrom(dev_id, len, 1U);                      // SLA+R and STOP
 
-  // using the blink without delay pattern here
-  const int32_t timeout = 1000;                            // wait for up to 1s
-  uint32_t previousMillis = millis();
-  uint32_t currentMillis = millis();
-  uint8_t num_read = 0;
-  boolean complete = false;
+	// using the blink without delay pattern here
+	const int32_t timeout = 1000;                            // wait for up to 1s
+	uint32_t previousMillis = millis();
+	uint32_t currentMillis = millis();
+	uint8_t num_read = 0;
+	boolean complete = false;
 
-  while(!complete){   // loop until break because got all the bytes or timed out
-    currentMillis = millis();
+	while (!complete){   // loop until break because got all the bytes or timed out
+		currentMillis = millis();
 
-    if(Wire.available()){
-      *reg_data = Wire.read();                         // DATA
-      reg_data++; // advance write pointer
-      num_read++;     // increment read counter
-    }
+		if (Wire.available()){
+			reg_data[num_read] = Wire.read();                         // DATA
+			num_read++;     // increment read index
+		}
 
-    if(num_read == len){                              // read complete
-      ret = 0;                            // good outcome
-      complete = true;
-    }
-    else if (currentMillis - previousMillis >= timeout) {  // timeout
-      complete = true;
-    }
-  }
+		if (num_read == len){                              // read complete
+			ret = 0;                            // good outcome
+			complete = true;
+		}
+		else if ((currentMillis - previousMillis) >= timeout) {  // timeout
+			complete = false;
+		}
+	}
 
-  return ret;
+	return ret;
 }
 
 void BME680_Library::delay_msec(uint32_t ms){
