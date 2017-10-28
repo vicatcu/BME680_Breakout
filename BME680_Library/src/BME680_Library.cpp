@@ -84,7 +84,7 @@ int8_t BME680_Library::i2c_write(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_
 
 	// Interleaving of register address and data is done by the API
 	Wire.beginTransmission(dev_id); // starts queueing bytes to be written
-	Wire.write(reg_addr);           // write the register address 
+	Wire.write(reg_addr);           // write the register address
 	while (num_written < len){  // Queue the rest of the bytes
 		Wire.write(reg_data[num_written]);      // write the register value
 		num_written++;                  // increment the number of bytes written
@@ -126,7 +126,7 @@ int8_t BME680_Library::i2c_read(uint8_t dev_id, uint8_t reg_addr, uint8_t *reg_d
 	Wire.beginTransmission(dev_id);                          // START+SLA+W
 	Wire.write(reg_addr);                                    // REG
 	Wire.endTransmission(false);                             // STOP (false would be REP START)
-	Wire.requestFrom(dev_id, len, 1U);                      // SLA+R and STOP
+	Wire.requestFrom((int) dev_id, (int) len, (int) true);            // SLA+R and STOP
 
 	// using the blink without delay pattern here
 	const int32_t timeout = 1000;                            // wait for up to 1s
