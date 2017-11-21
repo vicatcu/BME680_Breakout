@@ -40,8 +40,8 @@
  * patent rights of the copyright holder.
  *
  * @file	bme680.h
- * @date	5 Jul 2017
- * @version	3.5.1
+ * @date	20 Nov 2017
+ * @version	3.5.5
  * @brief
  *
  */
@@ -162,7 +162,7 @@ void bme680_set_profile_dur(uint16_t duration, struct bme680_dev *dev);
  *
  * @return Nothing
  */
-void bme680_get_profile_dur(uint16_t *duration, struct bme680_dev *dev);
+void bme680_get_profile_dur(uint16_t *duration, const struct bme680_dev *dev);
 
 /*!
  * @brief This API reads the pressure, temperature and humidity and gas data
@@ -186,7 +186,7 @@ int8_t bme680_get_sensor_data(struct bme680_field_data *data, struct bme680_dev 
  * are to be set in the sensor.
  *
  *	 Macros			       |	Functionality
- *-------------------------|----------------------------------------------
+ *---------------------------------|----------------------------------------------
  *	BME680_OST_SEL		   |	To set temperature oversampling.
  *	BME680_OSP_SEL		   |	To set pressure oversampling.
  *	BME680_OSH_SEL		   |	To set humidity oversampling.
